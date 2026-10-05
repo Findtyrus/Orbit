@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAI, type OutreachInput, type TimelineEntry } from "./ai/service";
 import { loadProfile } from "./brain";
 import { approachability, worksAt, type Firm } from "./firms";
-import { spendAI } from "./limits";
+import { aiAccess, claimAI } from "./limits";
 import { fullName, isoDate, type ContactStatus } from "./types";
 
 const DAILY_TARGET = 5;
@@ -19,6 +19,7 @@ export type QueueResult = { made: number; error?: string };
 
 export async function buildQueue(db: SupabaseClient, userId: string): Promise<QueueResult> {
   if (!process.env.ANTHROPIC_API_KEY) return { made: 0, error: "AI isn't configured." };
+  if (!(await aiAccess(userId)).active) return { made: 0 };
   const today = isoDate();
   const [{ data: existing }, { data: people }, { data: firms }] = await Promise.all([
     db.from("outreach_queue").select("contact_id, for_date").eq("user_id", userId).gte("for_date", isoDate(-COOLDOWN_DAYS)),
@@ -67,7 +68,7 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<Qu
 
   // Spend the allowance up front; trim the queue if the user is near their daily cap.
   let n = picks.length;
-  while (n > 0 && !(await spendAI(userId, "drafts", n))) n--;
+  while (n > 0 && (await claimAI(userId, "drafts", n)) !== null) n--;
   if (!n) return { made: 0, error: "You've used today's outreach drafts. They reset at midnight UTC." };
 
   const me = await loadProfile(db, userId);

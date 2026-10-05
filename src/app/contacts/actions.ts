@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { getUser } from "@/lib/supabase/server";
 import { buildBrain } from "@/lib/brain";
-import { spendAI } from "@/lib/limits";
+import { claimAI } from "@/lib/limits";
 
 async function done(id: string) {
   revalidatePath(`/contacts/${id}`);
@@ -53,7 +53,7 @@ export async function logInteraction(id: string, form: FormData) {
   if (body.length > 20 && process.env.ANTHROPIC_API_KEY) {
     after(async () => {
       try {
-        if (await spendAI(user.id, "memories")) await buildBrain(supabase, user.id, id);
+        if ((await claimAI(user.id, "memories")) === null) await buildBrain(supabase, user.id, id);
       } catch (e) { console.error("brain rebuild failed", e); }
     });
   }

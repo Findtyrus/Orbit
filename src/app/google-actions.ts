@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getUser } from "@/lib/supabase/server";
 import { syncGoogle, type SyncSummary } from "@/lib/google";
 import { loadProfile } from "@/lib/brain";
-import { limitMessage, spendAI } from "@/lib/limits";
+import { claimAI } from "@/lib/limits";
 import { getAI, type MeetingPrep, type TimelineEntry } from "@/lib/ai/service";
 import { fullName, isoDate, type ContactStatus, type Synopsis } from "@/lib/types";
 
@@ -22,7 +22,8 @@ export async function prepMeeting(meetingId: string): Promise<string | null> {
   if (!user) return "Not signed in.";
   const { data: m } = await supabase.from("meetings").select("*").eq("id", meetingId).single();
   if (!m) return "Meeting not found.";
-  if (!(await spendAI(user.id, "preps"))) return limitMessage("preps");
+  const blocked = await claimAI(user.id, "preps");
+  if (blocked) return blocked;
 
   const ids: string[] = m.contact_ids ?? [];
   const [{ data: people }, { data: syn }, { data: loops }, { data: rows }, me] = await Promise.all([

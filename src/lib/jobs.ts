@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
 import { buildBrain, staleBrainIds } from "./brain";
-import { spendAI } from "./limits";
+import { claimAI } from "./limits";
 import { syncGoogle } from "./google";
 import { buildQueue } from "./outreach";
 
@@ -19,7 +19,7 @@ export async function buildBrainsFor(userId: string, budgetMs = 240_000) {
   for (;;) {
     const { ids, remaining } = await staleBrainIds(db, userId, CONCURRENCY);
     if (!ids.length || Date.now() > deadline - 60_000) return { built, remaining };
-    if (!(await spendAI(userId, "memories", ids.length))) return { built, remaining };
+    if ((await claimAI(userId, "memories", ids.length)) !== null) return { built, remaining };
     const results = await Promise.allSettled(ids.map((id) => buildBrain(db, userId, id)));
     const ok = results.filter((r) => r.status === "fulfilled").length;
     built += ok;

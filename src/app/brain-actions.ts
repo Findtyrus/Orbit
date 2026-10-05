@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getUser } from "@/lib/supabase/server";
 import { buildBrain, loadProfile, staleBrainIds } from "@/lib/brain";
-import { limitMessage, spendAI } from "@/lib/limits";
+import { claimAI } from "@/lib/limits";
 import { getAI, type AskAnswer } from "@/lib/ai/service";
 import { fullName, isoDate, relDays, type ContactStatus } from "@/lib/types";
 
@@ -14,7 +14,8 @@ export async function refreshBrain(contactId: string): Promise<string | null> {
   if (missingKey()) return missingKey();
   const { supabase, user } = await getUser();
   if (!user) return "Not signed in.";
-  if (!(await spendAI(user.id, "memories"))) return limitMessage("memories");
+  const blocked = await claimAI(user.id, "memories");
+  if (blocked) return blocked;
   try {
     await buildBrain(supabase, user.id, contactId);
   } catch (e) {
@@ -34,9 +35,8 @@ export async function buildBrains(): Promise<BatchResult> {
   const { supabase, user } = await getUser();
   if (!user) return { built: 0, remaining: 0, errors: ["Not signed in."] };
   const { ids, remaining } = await staleBrainIds(supabase, user.id, 6);
-  if (ids.length && !(await spendAI(user.id, "memories", ids.length))) {
-    return { built: 0, remaining: 0, errors: [limitMessage("memories")] };
-  }
+  const blocked = ids.length ? await claimAI(user.id, "memories", ids.length) : null;
+  if (blocked) return { built: 0, remaining: 0, errors: [blocked] };
   const results = await Promise.allSettled(ids.map((id) => buildBrain(supabase, user.id, id)));
   const errors = results.flatMap((r) => (r.status === "rejected" ? [String(r.reason?.message ?? r.reason)] : []));
   const built = results.length - errors.length;
@@ -74,7 +74,8 @@ export async function askNetwork(_prev: AskResult | null, form: FormData): Promi
   if (missingKey()) return { ok: false, error: missingKey()! };
   const { supabase, user } = await getUser();
   if (!user) return { ok: false, error: "Not signed in." };
-  if (!(await spendAI(user.id, "asks"))) return { ok: false, error: limitMessage("asks") };
+  const blocked = await claimAI(user.id, "asks");
+  if (blocked) return { ok: false, error: blocked };
 
   const [{ data: people }, { data: syn }, me] = await Promise.all([
     supabase.from("contact_status").select("*").order("score", { ascending: false }).limit(3000),

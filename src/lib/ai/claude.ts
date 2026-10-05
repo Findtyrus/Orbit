@@ -6,7 +6,7 @@ import {
   type OutreachDraft, type OutreachInput, type PrepInput,
 } from "./service";
 
-const MODEL = "claude-opus-5-5";
+const MODEL = process.env.AI_MODEL || "claude-sonnet-5-5";
 // Memories are the bulk of AI spend; set MEMORY_MODEL (e.g. claude-sonnet-5-5) to trade quality for cost.
 const MEMORY_MODEL = process.env.MEMORY_MODEL || MODEL;
 // Re-run a policy-declined request on Anthropic's recommended fallback model instead of failing.
