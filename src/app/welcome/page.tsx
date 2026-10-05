@@ -26,6 +26,17 @@ const FEATURES = [
   },
 ];
 
+const FAQ: [string, string][] = [
+  ["Will Orbit message people for me?", "Never. Orbit drafts messages; you read, edit and send every one yourself from LinkedIn or your own email."],
+  ["Is my data private?", "Yes. Your network is visible only to you. You can export or delete everything anytime, and the AI provider doesn't train on your data."],
+  ["Do I need LinkedIn Premium?", "No. You import your free LinkedIn data export (Settings, Data privacy, Get a copy of your data)."],
+  ["LinkedIn's export takes a day. Can I start now?", "Yes. Add the people you're already talking to by hand and set up your target companies while you wait."],
+  ["Why not just use a spreadsheet?", "A spreadsheet doesn't remember what people told you, notice when someone hasn't replied, or draft the follow-up. Orbit does all three."],
+  ["Is it only for finance and accounting?", "It's built for them first, with target companies, coffee chats and recruiting deadlines. Any student who networks can use it."],
+  ["What does it cost?", "Free for 14 days, no credit card. Then $6 a month or $48 a year, which works out to about $4 a month."],
+  ["Is there an iPhone app?", "Orbit works on your phone today. Open it in Safari, tap Share, then Add to Home Screen, and it opens like an app."],
+];
+
 function PreviewCard() {
   return (
     <div className="rounded-lg border border-line bg-card p-4 shadow-[0_1px_0_rgba(0,0,0,0.03),0_12px_32px_-12px_rgba(20,23,28,0.18)]">
@@ -63,17 +74,14 @@ export default function WelcomePage() {
 
       <section>
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">For finance &amp; accounting students</p>
-        <h1 className="mt-3 text-[2.6rem] leading-[1.08]">Keep the people in your orbit close.</h1>
+        <h1 className="mt-3 text-[2.6rem] leading-[1.08]">Turn coffee chats into referrals.</h1>
         <p className="mt-4 text-[17px] leading-relaxed text-muted">
-          Orbit is a networking CRM for students recruiting into audit, transaction advisory, banking, private equity
-          and corporate development. It remembers every conversation and tells you who to follow up with and what
-          to say.
+          Orbit remembers every networking conversation, reminds you what you promised, and tells you exactly who to
+          follow up with today, with the message already drafted. Built for students recruiting into audit,
+          advisory, banking and corporate finance.
         </p>
-        <div className="mt-7 flex gap-3">
-          <Link href="/signup" className="flex-1 rounded-md bg-accent py-3 text-center font-medium text-accent-ink">Start free trial</Link>
-          <Link href="/login" className="rounded-md border border-line bg-card px-5 py-3 text-center font-medium">Sign in</Link>
-        </div>
-        <p className="mt-3 text-xs text-faint">14 days of Pro free · No credit card · Works on your phone</p>
+        <Link href="/signup" className="mt-7 block rounded-md bg-accent py-3.5 text-center font-medium text-accent-ink">Start free trial</Link>
+        <p className="mt-3 text-center text-xs text-faint">14 days free · No credit card · Works on your phone</p>
       </section>
 
       <PreviewCard />
@@ -93,8 +101,24 @@ export default function WelcomePage() {
         </ol>
       </section>
 
+      <section>
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">Questions</h2>
+        <div className="mt-3 divide-y divide-line border-y border-line">
+          {FAQ.map(([q, a]) => (
+            <details key={q} className="group py-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
+                {q}
+                <span className="text-faint transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="rounded-lg border border-line bg-card p-5">
-        <h2 className="text-lg font-semibold tracking-tight">Set up in five minutes</h2>
+        <p className="text-sm text-muted">Keep the people in your orbit close.</p>
+        <h2 className="mt-1 text-lg font-semibold tracking-tight">Set up in five minutes</h2>
         <ol className="mt-3 space-y-2 text-sm text-muted">
           <li><span className="font-medium text-ink">1.</span> Add your school, target roles and companies.</li>
           <li><span className="font-medium text-ink">2.</span> Upload your LinkedIn data export with your connections and messages.</li>
