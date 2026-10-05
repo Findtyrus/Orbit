@@ -4,7 +4,14 @@ import { NextResponse, type NextRequest } from "next/server";
 // Pages anyone can see. Cron authenticates with CRON_SECRET instead of a session.
 const PUBLIC = ["/login", "/signup", "/auth", "/welcome", "/privacy", "/terms", "/manifest.webmanifest", "/api/cron", "/api/stripe/webhook"];
 
+const REQUIRED = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"] as const;
+
 export async function proxy(request: NextRequest) {
+  // A deploy without its settings should say so plainly instead of a bare 500.
+  const missing = REQUIRED.filter((k) => !process.env[k]);
+  if (missing.length) {
+    return new NextResponse(`Orbit is missing configuration: ${missing.join(", ")}. Add it in Vercel → Settings → Environment Variables, then redeploy.`, { status: 503 });
+  }
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
