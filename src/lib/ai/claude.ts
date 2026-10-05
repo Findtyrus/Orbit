@@ -1,9 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import {
-  AskSchema, MeetingPrepSchema, MemorySchema, OutreachSchema,
+  AskSchema, MeetingPrepSchema, MemorySchema, OutreachSchema, ResumeSchema,
   type AIService, type AskAnswer, type AskInput, type MeetingPrep, type Memory, type MemoryInput,
-  type OutreachDraft, type OutreachInput, type PrepInput,
+  type OutreachDraft, type OutreachInput, type PrepInput, type Resume,
 } from "./service";
 
 const MODEL = process.env.AI_MODEL || "claude-sonnet-5-5";
@@ -48,9 +48,11 @@ as reflected in their own messages: specific to this history, warm, brief (Linke
 no placeholders. If there is nothing natural to say yet, draft a short, genuine first touchpoint
 grounded in the person's background and the owner's goals.
 
-The owner is usually a student recruiting into finance or accounting, where coffee chats lead to referrals.
+The owner is usually a student recruiting for internships or full-time roles (often in finance or accounting), where coffee chats lead to referrals.
 If the latest interaction is a call or meeting from the last two days and no thank-you followed it, the next
-step is a short thank-you that mentions one specific thing they said. After a good conversation, a natural
+step is a short thank-you that mentions one specific thing they said. Common ground is the best opener there is: when the owner's background and this person's overlap (same employer,
+school, career path, hometown, sport or club), list it in common_ground and use it naturally in the suggested message.
+Only list overlaps you can actually see in both backgrounds. After a good conversation, a natural
 later step is a brief update on what the owner did with their advice, and - once the relationship is warm and
 the owner is applying there - asking whether they'd be open to a referral.`;
 
@@ -67,18 +69,18 @@ Use only what's in the meeting details, the attendee memories and recent history
 specific to these people; skip generic advice. If there's little history, say so and lean on their role
 and the owner's goals for the questions.`;
 
-const OUTREACH_SYSTEM = `You draft networking messages for a student recruiting into finance or accounting.
+const OUTREACH_SYSTEM = `You draft networking messages for a student recruiting for internships or full-time roles (often in finance or accounting).
 The student will read and send every message themselves, so write exactly what they would send.
 
 Rules for every draft:
-- Sound like a thoughtful student, not a template: specific to this person's role, firm, or past conversation.
+- Sound like a thoughtful student, not a template: specific to this person's role, company, or past conversation.
 - Short. LinkedIn: 2 to 4 sentences, under 600 characters. Email: under 120 words.
 - One clear, easy ask (a 15 to 20 minute call, or a quick question). Never ask for a job or a referral in a first message.
 - No flattery, no buzzwords, no exclamation points, no placeholders like [Name].
 
 By kind:
 - intro: first message to someone they're connected with but have never messaged. Mention why this person specifically
-  (their path, team, or firm) and connect it to the student's goals.
+  (their path, team, or company) and connect it to the student's goals.
 - follow_up: the student messaged and got no reply. Brief, warm, zero guilt, add one new reason to reply or make the ask smaller.
 - check_in: an existing relationship that's gone quiet. Share a genuine update tied to past conversation, then a light ask.`;
 
@@ -165,7 +167,7 @@ ${timeline}`,
 ${meBlock(input.me)}
 
 Draft a ${input.kind.replace("_", "-")} message over ${input.channel === "email" ? "email" : "LinkedIn"}.
-To: ${p.name}, ${[p.title, p.company].filter(Boolean).join(" at ") || "role unknown"}${p.isTargetFirm ? " (one of the student's target firms)" : ""}
+To: ${p.name}, ${[p.title, p.company].filter(Boolean).join(" at ") || "role unknown"}${p.isTargetFirm ? " (one of the student's target companies)" : ""}
 What Orbit remembers: ${input.memory ?? "(nothing yet)"}
 Recent history, oldest first:
 ${recent || "(none: they have never messaged)"}`,
@@ -173,6 +175,26 @@ ${recent || "(none: they have never messaged)"}`,
     });
     if (response.stop_reason === "refusal") throw new Error("The model declined to draft this message.");
     if (!response.parsed_output) throw new Error(`No draft returned (stop reason: ${response.stop_reason}).`);
+    return undash(response.parsed_output);
+  }
+
+  async parseResume(pdfBase64: string): Promise<Resume> {
+    const response = await this.client.beta.messages.parse({
+      model: MEMORY_MODEL,
+      max_tokens: 8000,
+      ...FALLBACK,
+      output_config: { effort: "low", format: betaZodOutputFormat(ResumeSchema) },
+      system: `Extract a student's resume into structured fields exactly as written. Don't infer or embellish. ${STYLE}`,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "document", source: { type: "base64", media_type: "application/pdf", data: pdfBase64 } },
+          { type: "text", text: "Extract this resume." },
+        ],
+      }],
+    });
+    if (response.stop_reason === "refusal") throw new Error("The model declined to read this resume.");
+    if (!response.parsed_output) throw new Error(`Couldn't read the resume (stop reason: ${response.stop_reason}).`);
     return undash(response.parsed_output);
   }
 

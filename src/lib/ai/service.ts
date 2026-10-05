@@ -13,7 +13,30 @@ export interface AIService {
   prepMeeting(input: PrepInput): Promise<MeetingPrep>;
   /** One outreach draft (cold intro, follow-up, or check-in) for the daily queue. */
   draftOutreach(input: OutreachInput): Promise<OutreachDraft>;
+  /** Pull structured background out of a resume PDF (base64). */
+  parseResume(pdfBase64: string): Promise<Resume>;
 }
+
+export const ResumeSchema = z.object({
+  summary: z.string().describe("Two sentences on who this student is professionally, in third person."),
+  education: z.array(z.object({
+    school: z.string(),
+    degree: z.string().nullable(),
+    major: z.string().nullable(),
+    grad_year: z.number().nullable(),
+  })),
+  experience: z.array(z.object({
+    company: z.string(),
+    title: z.string(),
+    dates: z.string().nullable().describe("As written, e.g. 'May 2025 to Aug 2025'."),
+    location: z.string().nullable(),
+  })).describe("Jobs and internships, most recent first."),
+  activities: z.array(z.string()).describe("Clubs, sports, leadership, volunteering."),
+  skills: z.array(z.string()),
+  certifications: z.array(z.string()),
+  hometown: z.string().nullable().describe("Only if stated."),
+});
+export type Resume = z.infer<typeof ResumeSchema>;
 
 export type OutreachInput = {
   today: string;
@@ -99,6 +122,7 @@ export const MemorySchema = z.object({
   follow_up_on: z.string().nullable().describe("YYYY-MM-DD when the next touchpoint makes sense, else null."),
   suggested_message: z.string().describe("A ready-to-edit message in the owner's voice for the next step."),
   tags: z.array(z.string()).describe("1-4 short group labels for this person, e.g. 'Audit → TAS → IB', 'Search funds', 'MSU alumni'."),
+  common_ground: z.array(z.string()).describe("Genuine things the owner and this person share (same employer, school, path, hometown, sport, club, interest), each grounded in both backgrounds. Empty if nothing real."),
 });
 export type Memory = z.infer<typeof MemorySchema>;
 

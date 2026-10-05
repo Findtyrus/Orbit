@@ -34,8 +34,8 @@ export default async function FirmsPage() {
   return (
     <div className="space-y-5">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Firms</h1>
-        <p className="mt-1 text-muted">Your recruiting pipeline and who you know at each firm.</p>
+        <h1 className="text-3xl font-semibold tracking-tight">Companies</h1>
+        <p className="mt-1 text-muted">Your recruiting pipeline and who you know at each company.</p>
       </header>
 
       <div className="no-scrollbar flex gap-2 overflow-x-auto text-center">
@@ -48,7 +48,7 @@ export default async function FirmsPage() {
       </div>
 
       <form action={addFirm} className="flex gap-2">
-        <input name="name" required placeholder="Add a firm, e.g. Alvarez & Marsal"
+        <input name="name" required placeholder="Add a company, e.g. Deloitte"
           className="min-w-0 flex-1 rounded-md border border-line bg-card px-3 py-2.5 text-sm outline-none placeholder:text-faint focus:border-accent" />
         <select name="category" className="w-28 rounded-md border border-line bg-card px-2 text-sm">
           <option value="">Type</option>
@@ -80,7 +80,7 @@ export default async function FirmsPage() {
         ))}
         {!active.length && (
           <p className="rounded-lg border border-line bg-card p-4 text-sm text-muted">
-            Add the firms you&apos;re recruiting for. Orbit finds everyone you know there and tracks each firm from
+            Add the companies you&apos;re recruiting for. Orbit finds everyone you know there and tracks each one from
             networking to offer.
           </p>
         )}

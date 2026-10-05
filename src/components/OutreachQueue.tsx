@@ -95,7 +95,7 @@ export function OutreachQueue({ items, sentToday, canPrepare }: { items: QueueIt
       ) : (
         <div className="rounded-lg border border-line bg-card p-4 text-sm">
           <p className="text-muted">
-            {sentToday ? "You're through today's outreach." : "Orbit drafts a few messages a day: intros at your target firms and follow-ups when someone hasn't replied. You edit and send each one."}
+            {sentToday ? "You're through today's outreach." : "Orbit drafts a few messages a day: intros at your target companies and follow-ups when someone hasn't replied. You edit and send each one."}
           </p>
           {canPrepare && !sentToday && (
             <button type="button" disabled={pending}

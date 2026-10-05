@@ -14,7 +14,7 @@ export default function PrivacyPage() {
       <h2>What we collect</h2>
       <ul>
         <li><b>Account information:</b> your name, email address and password (stored hashed by our authentication provider).</li>
-        <li><b>Profile information you provide:</b> school, graduation year, target roles and firms, background and goals.</li>
+        <li><b>Profile information you provide:</b> school, graduation year, target roles and companies, background and goals.</li>
         <li><b>LinkedIn data you upload:</b> from the export file you download from LinkedIn and choose to upload: your connections (names, companies, titles, profile URLs, connection dates) and your LinkedIn messages.</li>
         <li><b>Google Calendar data (if you connect it):</b> events in your primary calendar from about the last 180 days and next 30 days, including titles, times, descriptions, locations and attendee names and emails.</li>
         <li><b>Gmail data (only for invited beta testers who connect it):</b> emails exchanged with people in your Orbit network: sender, recipients, subject, date and message text. Promotional, newsletter and automated emails are skipped.</li>

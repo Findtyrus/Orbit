@@ -6,7 +6,7 @@ import { openBillingPortal, startCheckout } from "../billing-actions";
 const FEATURES: [string, string, string][] = [
   ["People, timelines & Today list", "✓", "✓"],
   ["LinkedIn import & Google Calendar", "✓", "✓"],
-  ["Target firms in your pipeline", `${FREE_FIRM_LIMIT}`, "Unlimited"],
+  ["Target companies in your pipeline", `${FREE_FIRM_LIMIT}`, "Unlimited"],
   ["AI memory updates per day", `${PLAN_LIMITS.free.memories}`, `${PLAN_LIMITS.pro.memories}`],
   ["Ask your network per day", `${PLAN_LIMITS.free.asks}`, `${PLAN_LIMITS.pro.asks}`],
   ["Meeting prep briefs per day", `${PLAN_LIMITS.free.preps}`, `${PLAN_LIMITS.pro.preps}`],

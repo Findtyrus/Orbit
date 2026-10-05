@@ -61,7 +61,7 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<Qu
   }));
   for (let round = 0; picks.length < room && pools.some((p) => p.people[round]); round++) {
     for (const { f, people: ps } of pools) {
-      if (ps[round]) add({ c: ps[round], kind: "intro", reason: `At ${f.name}, a target firm. You've never messaged`, firm: f.name });
+      if (ps[round]) add({ c: ps[round], kind: "intro", reason: `At ${f.name}, a target company. You've never messaged`, firm: f.name });
     }
   }
   if (!picks.length) return { made: 0 };

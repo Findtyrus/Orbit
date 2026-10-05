@@ -11,7 +11,7 @@ export async function prepareOutreach(): Promise<string | null> {
   const { made, error } = await buildQueue(supabase, user.id);
   revalidatePath("/");
   if (error) return error;
-  return made ? null : "Nothing to queue right now. Add target firms on the Firms tab, or check back after more conversations.";
+  return made ? null : "Nothing to queue right now. Add target companies on the Companies tab, or check back after more conversations.";
 }
 
 /** The user sent it (themselves) or skipped it. Sending logs the message so follow-up tracking works. */

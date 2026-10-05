@@ -26,9 +26,9 @@ const STEPS = [
     where: "Badges on each person",
   },
   {
-    title: "Firms",
-    body: "Add the firms you're recruiting for. Orbit finds everyone you know there and tracks each firm from networking to offer, with a suggested next move.",
-    where: "Firms tab",
+    title: "Companies",
+    body: "Add the companies you're recruiting for. Orbit finds everyone you know there and tracks each one from networking to offer, with a suggested next move.",
+    where: "Companies tab",
   },
   {
     title: "Calendar",

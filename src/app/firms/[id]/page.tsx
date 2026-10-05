@@ -14,7 +14,7 @@ function nextMove(f: Firm, known: ContactStatus[], cold: ContactStatus[]) {
   if (f.stage === "Offer" || f.stage === "Closed") return null;
   if (f.stage === "Interviewing") return best ? `Ask ${best.first_name} what interviews there focus on.` : "Prep for interviews. Find someone who's been through it.";
   if (!known.length && cold.length) return `Reach out to ${Math.min(3, cold.length)} people below, starting with ${fullName(cold[0])}.`;
-  if (!known.length) return "No one you know works here yet. Search LinkedIn for alumni at this firm and connect.";
+  if (!known.length) return "No one you know works here yet. Search LinkedIn for alumni at this company and connect.";
   if (f.stage === "Researching" || f.stage === "Networking") {
     return best.strength === "Warm" || best.strength === "Strong"
       ? `You have a warm contact. Ask ${best.first_name} whether they'd be open to referring you.`
@@ -39,7 +39,7 @@ export default async function FirmPage({ params }: PageProps<"/firms/[id]">) {
   return (
     <div className="space-y-6">
       <header className="pt-2">
-        <Link href="/firms" className="text-sm text-muted">← Firms</Link>
+        <Link href="/firms" className="text-sm text-muted">← Companies</Link>
         <div className="mt-2 flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">{f.name}</h1>
           <StageBadge stage={f.stage} />
@@ -93,7 +93,7 @@ export default async function FirmPage({ params }: PageProps<"/firms/[id]">) {
               {FIRM_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
             <select name="priority" defaultValue={String(f.priority)} className={field}>
-              <option value="1">★ Dream firm</option>
+              <option value="1">★ Dream company</option>
               <option value="2">Target</option>
               <option value="3">Backup</option>
             </select>
@@ -105,7 +105,7 @@ export default async function FirmPage({ params }: PageProps<"/firms/[id]">) {
       </section>
 
       <form action={deleteFirm.bind(null, f.id)} className="text-center">
-        <button className="text-sm text-muted">Remove firm</button>
+        <button className="text-sm text-muted">Remove company</button>
       </form>
     </div>
   );

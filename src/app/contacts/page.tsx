@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getUser } from "@/lib/supabase/server";
 import { ContactRow } from "@/components/ContactRow";
+import { sharedEmployers } from "@/lib/firms";
 import type { ContactStatus } from "@/lib/types";
 
 const FILTERS = [
@@ -8,6 +9,7 @@ const FILTERS = [
   { key: "starred", label: "★ Starred" },
   { key: "talked", label: "Talked to" },
   { key: "tracked", label: "Keeping in touch" },
+  { key: "common", label: "In common" },
 ];
 
 export default async function ContactsPage({ searchParams }: PageProps<"/contacts">) {
@@ -24,11 +26,24 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
   if (filter === "starred") query = query.eq("starred", true);
   if (filter === "talked") query = query.gt("interaction_count", 0);
   if (filter === "tracked") query = query.not("cadence_days", "is", null);
-  const { data } = await query
-    .order("last_interaction_at", { ascending: false, nullsFirst: false })
-    .order("connected_on", { ascending: false, nullsFirst: false })
-    .limit(200);
-  const contacts = (data ?? []) as ContactStatus[];
+
+  let contacts: ContactStatus[];
+  let hint: string | null = null;
+  if (filter === "common") {
+    // People currently at a company you've worked for (from your resume).
+    const [{ data: me }, { data: all }] = await Promise.all([
+      supabase.from("profiles").select("*").maybeSingle(),
+      query.not("company", "is", null).order("score", { ascending: false }).limit(5000),
+    ]);
+    contacts = ((all ?? []) as ContactStatus[]).filter((c) => sharedEmployers(c.company, me?.resume ?? null).length);
+    if (!me?.resume) hint = "Upload your resume in Account to find people at companies you've worked for.";
+  } else {
+    const { data } = await query
+      .order("last_interaction_at", { ascending: false, nullsFirst: false })
+      .order("connected_on", { ascending: false, nullsFirst: false })
+      .limit(200);
+    contacts = (data ?? []) as ContactStatus[];
+  }
 
   return (
     <div className="space-y-4">
@@ -53,10 +68,13 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
           </a>
         ))}
       </div>
+      {hint && <p className="rounded-lg border border-line bg-card p-4 text-sm text-muted">{hint}</p>}
       <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-card">
         {contacts.map((c) => <ContactRow key={c.id} c={c} />)}
-        {!contacts.length && <p className="p-4 text-center text-sm text-muted">No one matches.</p>}
-        {contacts.length === 200 && <p className="p-2 text-center text-xs text-muted">Showing the first 200. Search to narrow it down.</p>}
+        {!contacts.length && !hint && <p className="p-4 text-center text-sm text-muted">No one matches.</p>}
+        {filter !== "common" && contacts.length === 200 && (
+          <p className="p-2 text-center text-xs text-muted">Showing the first 200. Search to narrow it down.</p>
+        )}
       </div>
     </div>
   );

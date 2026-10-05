@@ -5,7 +5,8 @@ export const PERSON_STAGES = ["New", "Reached out", "Chat scheduled", "Chatted",
 export type PersonStage = (typeof PERSON_STAGES)[number];
 
 export const FIRM_CATEGORIES = [
-  "Big 4", "Regional CPA", "Advisory", "Boutique IB", "Middle-market IB", "Bulge bracket", "Private equity", "Search fund", "Corporate", "Other",
+  "Big 4", "Regional CPA", "Advisory", "Boutique IB", "Middle-market IB", "Bulge bracket", "Private equity", "Search fund",
+  "Consulting", "Corporate", "Tech", "Consumer goods", "Manufacturing", "Healthcare", "Startup", "Nonprofit", "Other",
 ];
 
 export type Firm = {
@@ -45,4 +46,15 @@ export function approachability(title: string | null) {
   if (/analyst|associate|senior|staff|consultant/.test(t)) return 3;
   if (/manager|vice president|\bvp\b/.test(t)) return 2;
   return 1.5;
+}
+
+/** Companies from the user's resume that this person also works at (instant, no AI). */
+export function sharedEmployers(company: string | null | undefined, resume: { experience?: { company: string }[] } | null) {
+  if (!company || !resume?.experience?.length) return [];
+  // "CLA (CliftonLarsonAllen)" should match either "CLA" or "CliftonLarsonAllen".
+  const names = (n: string) => {
+    const inner = n.match(/\(([^)]+)\)/)?.[1];
+    return { name: n.replace(/\([^)]*\)/g, "").trim() || n, aliases: inner ? [inner] : [] };
+  };
+  return [...new Set(resume.experience.filter((e) => worksAt(company, names(e.company))).map((e) => e.company))];
 }

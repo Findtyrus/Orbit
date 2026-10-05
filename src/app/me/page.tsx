@@ -10,6 +10,7 @@ import { signOut } from "../login/actions";
 import { LinkedInImport } from "./LinkedInImport";
 import { GoogleSync } from "./GoogleSync";
 import { DeleteAccount } from "./DeleteAccount";
+import { ResumeUpload } from "./ResumeUpload";
 import { ThemePicker } from "@/components/ThemePicker";
 import { replayTour } from "../profile-actions";
 import { cookies } from "next/headers";
@@ -34,7 +35,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Me</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Account</h1>
 
       {sp.billing === "success" && (
         <p className="rounded-lg border border-accent/15 bg-accent-soft p-4 text-sm text-accent">Welcome to Orbit Pro! Thanks for supporting Orbit.</p>
@@ -53,7 +54,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
                     : `Renews ${plan.renewsAt?.toLocaleDateString() ?? ""}`
                 : plan.source === "trial"
                   ? `Free trial: ${plan.trialDaysLeft} day${plan.trialDaysLeft === 1 ? "" : "s"} left`
-                  : "Upgrade for more AI and unlimited firms"}
+                  : "Upgrade for AI features and unlimited companies"}
             </p>
           </div>
           {plan.source === "subscription" ? (
@@ -68,6 +69,9 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
         <h2 className="mb-3 font-semibold">Your profile</h2>
         <ProfileForm p={profile ?? {}} />
       </section>
+
+      <ResumeUpload saved={(profile as { resume?: Parameters<typeof ResumeUpload>[0]["saved"] } | null)?.resume ?? null}
+        updated={(profile as { resume_updated_at?: string | null } | null)?.resume_updated_at ?? null} />
 
       <section className="rounded-lg border border-line bg-card p-4">
         <h2 className="font-semibold">Relationship memories</h2>

@@ -11,7 +11,7 @@ import {
 import { logInteraction, saveNotes, setCadence, snooze, toggleStar } from "../actions";
 import { addLoop } from "../../brain-actions";
 import { setPersonStageForm } from "../../firm-actions";
-import { PERSON_STAGES, worksAt, type Firm } from "@/lib/firms";
+import { PERSON_STAGES, sharedEmployers, worksAt, type Firm } from "@/lib/firms";
 import Link from "next/link";
 
 const KIND_LABEL: Record<Interaction["kind"], string> = {
@@ -33,7 +33,7 @@ const FACT_LABELS: [keyof Facts, string][] = [
 export default async function ContactPage({ params }: PageProps<"/contacts/[id]">) {
   const { id } = await params;
   const { supabase } = await getUser();
-  const [{ data: c }, { data: timeline }, { data: synopsis }, { data: loopRows }, { data: firmRows }] = await Promise.all([
+  const [{ data: c }, { data: timeline }, { data: synopsis }, { data: loopRows }, { data: firmRows }, { data: me }] = await Promise.all([
     supabase.from("contact_status").select("*").eq("id", id).maybeSingle<ContactStatus>(),
     supabase.from("interactions").select("id, kind, direction, occurred_at, subject, body")
       .eq("contact_id", id).order("occurred_at", { ascending: false }).limit(150),
@@ -41,11 +41,14 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
     supabase.from("commitments").select("id, contact_id, text, owner, due_on, status")
       .eq("contact_id", id).eq("status", "open").order("due_on", { nullsFirst: false }),
     supabase.from("firms").select("id, name, aliases, stage"),
+    supabase.from("profiles").select("*").maybeSingle(),
   ]);
   if (!c) notFound();
   const items = (timeline ?? []) as Interaction[];
   const loops = (loopRows ?? []) as Commitment[];
   const firm = ((firmRows ?? []) as Pick<Firm, "id" | "name" | "aliases" | "stage">[]).find((f) => worksAt(c.company, f));
+  const shared = sharedEmployers(c.company, me?.resume ?? null).map((co) => `You both worked at ${co}`);
+  const commonGround = [...new Set([...shared, ...((synopsis as { common_ground?: string[] } | null)?.common_ground ?? [])])];
 
   return (
     <div className="space-y-6">
@@ -61,7 +64,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
         )}
         {firm && (
           <Link href={`/firms/${firm.id}`} className="mt-2 rounded border border-accent/20 bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
-            Target firm · {firm.name} ({firm.stage}) →
+            Target company · {firm.name} ({firm.stage}) →
           </Link>
         )}
         <p className="mt-2 text-xs text-muted">
@@ -89,6 +92,17 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
           </button>
         ))}
       </form>
+
+      {commonGround.length > 0 && (
+        <section className="rounded-lg border border-line bg-card p-4">
+          <h2 className="text-sm font-semibold">In common</h2>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {commonGround.map((x) => (
+              <li key={x} className="flex gap-2"><span className="text-good">●</span><span>{x}</span></li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="rounded-lg border border-accent/15 bg-accent-soft p-4">
         <div className="flex items-start justify-between gap-3">

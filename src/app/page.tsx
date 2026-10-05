@@ -196,7 +196,7 @@ export default async function TodayPage() {
       )}
       {plan?.tier === "free" && (
         <Link href="/upgrade" className="block rounded-lg border border-line bg-card p-4 text-sm">
-          You&apos;re on Free. <span className="font-medium text-accent">Upgrade to Pro</span> for unlimited firms and more AI each day.
+          You&apos;re on Free. <span className="font-medium text-accent">Upgrade to Pro</span> for unlimited companies and AI features.
         </Link>
       )}
 

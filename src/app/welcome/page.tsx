@@ -17,8 +17,8 @@ const FEATURES = [
     body: "“Send me your resume.” “Reach back out in January.” Orbit catches commitments in your conversations and reminds you.",
   },
   {
-    title: "A pipeline for every target firm",
-    body: "Track each firm from networking to offer, see who you know there, and get the next move, down to who to ask for a referral.",
+    title: "A pipeline for every target company",
+    body: "Track each company from networking to offer, see who you know there, and get the next move, down to who to ask for a referral.",
   },
   {
     title: "Prepared for every coffee chat",
@@ -96,7 +96,7 @@ export default function WelcomePage() {
       <section className="rounded-lg border border-line bg-card p-5">
         <h2 className="text-lg font-semibold tracking-tight">Set up in five minutes</h2>
         <ol className="mt-3 space-y-2 text-sm text-muted">
-          <li><span className="font-medium text-ink">1.</span> Add your school, target roles and firms.</li>
+          <li><span className="font-medium text-ink">1.</span> Add your school, target roles and companies.</li>
           <li><span className="font-medium text-ink">2.</span> Upload your LinkedIn data export with your connections and messages.</li>
           <li><span className="font-medium text-ink">3.</span> Optionally connect Google Calendar.</li>
         </ol>

@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getAI, type TimelineEntry } from "./ai/service";
+import { getAI, type Resume, type TimelineEntry } from "./ai/service";
 import { fullName, isoDate } from "./types";
 
 // Keep the newest history when someone has an enormous thread (≈30k tokens of text).
@@ -14,16 +14,23 @@ export type Me = { name: string; about: string; goals: string };
  */
 export async function loadProfile(db: SupabaseClient, userId: string): Promise<Me> {
   const { data: p } = await db.from("profiles")
-    .select("name, about, goals, school, grad_year, target_roles, target_firms, location")
+    .select("*")
     .eq("user_id", userId).maybeSingle();
   if (!p) return { name: "Me", about: "", goals: "" };
+  const r = p.resume as Resume | null;
   const background = [
     p.school && `Student at ${p.school}${p.grad_year ? `, graduating ${p.grad_year}` : ""}.`,
     p.about,
+    r?.summary,
+    r?.experience?.length && `Experience: ${r.experience.map((e) => `${e.title} at ${e.company}${e.dates ? ` (${e.dates})` : ""}`).join("; ")}.`,
+    r?.education?.length && `Education: ${r.education.map((e) => [e.degree, e.major, e.school, e.grad_year].filter(Boolean).join(", ")).join("; ")}.`,
+    r?.activities?.length && `Activities: ${r.activities.join("; ")}.`,
+    r?.certifications?.length && `Certifications: ${r.certifications.join(", ")}.`,
+    r?.hometown && `Hometown: ${r.hometown}.`,
   ].filter(Boolean).join("\n");
   const goals = [
     p.target_roles?.length && `Recruiting for: ${p.target_roles.join(", ")}.`,
-    p.target_firms?.length && `Target firms: ${p.target_firms.join(", ")}.`,
+    p.target_firms?.length && `Target companies: ${p.target_firms.join(", ")}.`,
     p.location && `Wants to work in ${p.location}.`,
     p.goals,
   ].filter(Boolean).join("\n");
@@ -72,6 +79,7 @@ export async function buildBrain(db: SupabaseClient, userId: string, contactId: 
     summary: memory.summary,
     facts: memory.facts,
     talking_points: memory.talking_points,
+    common_ground: memory.common_ground,
     open_loops: memory.open_loops.map((l) => l.text), // legacy column, kept in sync
     next_step: memory.next_step,
     why_now: memory.why_now,
