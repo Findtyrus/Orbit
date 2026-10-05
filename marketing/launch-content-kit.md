@@ -1,178 +1,163 @@
-# Orbit launch content kit
+# Orbit launch campaign
 
-> "Orbit" is a working name — find/replace it once you pick the final name and handle.
+**Goal for the first two weeks:** 50 students signed up, 20 who import their LinkedIn, and 10 who use Orbit
+three or more days in a row. Sign-ups are vanity; students who come back are the signal.
 
-## The angle
+**Link:** https://orbit-zeta-ashen.vercel.app (swap in your own domain when you get one)
 
-**You are the customer.** An accounting senior on the CPA track, networking his way from audit toward TAS and
-M&A, who got tired of forgetting what people told him on coffee chats — so he built the tool. Every post is
-either (a) genuinely useful networking advice for finance/accounting students, or (b) the honest story of
-building Orbit. Product mentions ride on top of value; never lead with "download my app."
+**One-line pitch:** Orbit remembers every coffee chat and tells you who to follow up with, and what to say.
 
-**One-line pitch:** Orbit remembers every coffee chat and tells you exactly who to follow up with — and what to say.
+**Who it's for first:** accounting and finance students recruiting for internships and full-time roles. Start
+at Mississippi State, where you can reach people directly.
 
-**Who it's for:** accounting and finance students recruiting into Big 4 / regional audit and tax, TAS/FDD,
-valuation, investment banking, PE and corp dev — especially non-target-school students who have to network
-harder.
+**What's true and safe to say** (stick to these):
+- Free to try for 14 days, no credit card. After that $6 a month or $48 a year.
+- Works on your phone: open the link in Safari, then Share, then Add to Home Screen.
+- Import your LinkedIn connections and messages; Orbit ranks who to contact each day and drafts the message.
+- Tracks target companies, coffee chats, follow-ups and deadlines in one place.
+- You send every message yourself. Orbit never sends anything for you.
 
-**Call to action (pick one and keep it everywhere):** "Link in bio — free while in beta."
+Rules: only real numbers and real quotes, never show other people's names or messages on screen (use the demo
+account), and no dashes in posts.
 
-## Content pillars (rotate through these)
+---
 
-| Pillar | Share of posts | Why it works |
-|---|---|---|
-| **Networking playbook** — scripts, templates, timelines | 40% | Saves/shares; builds trust before you ask for anything |
-| **Build in public** — what you built, what broke, user counts | 25% | People root for student founders; LinkedIn loves it |
-| **Product in action** — 15–30s screen recordings | 20% | Shows the "aha" (Today list, memory, open loops) |
-| **Recruiting reality** — your own journey, wins, rejections | 15% | Relatable; makes you the face of the brand |
+## Before launch day (1 to 2 days)
 
-## Short-form video scripts (TikTok / Reels / Shorts)
+- [ ] Anthropic credits at about $50 with auto-reload and a monthly cap
+- [ ] Test sign-up end to end as a new student in a private Safari tab
+- [ ] Seed the demo account (`npm run seed:demo -- tyrus.burton7+demo@gmail.com`) and screen-record a 30 second walkthrough of it
+- [ ] Take 3 screenshots from the demo account: Today, a person's page with "In common", the Companies pipeline
+- [ ] Make a QR code for the link (any free QR generator) for flyers and slides
+- [ ] Write down 25 names to message personally: classmates recruiting this year, Beta Alpha Psi, finance and investment club members
 
-Film vertical, face to camera or screen recording with your voiceover. Put the hook as on-screen text in the
-first second. 20–45 seconds each.
+---
 
-### 1. "I built an app because I kept forgetting coffee chats"
-- **Hook (on screen):** "I did 40 coffee chats this semester and forgot half of what people told me."
-- **Beat 1:** "Someone tells you 'send me your resume' or 'reach back out in January'… and then you don't."
-- **Beat 2 (screen rec):** Open Orbit → Today list. "So I built this. It reads my LinkedIn messages and tells me who to follow up with today."
-- **Beat 3 (screen rec):** Tap a person → memory + open loops. "It remembers what they told me and what I promised."
-- **CTA:** "It's free while I'm testing it. Link in bio."
+## Day by day
 
-### 2. "The coffee chat follow-up nobody does"
-- **Hook:** "The coffee chat isn't what gets you the referral. This is."
-- **Beats:** (1) Thank-you within 24 hours that mentions one specific thing they said. (2) 3–4 weeks later: a short update on what you did with their advice. (3) When applications open: "Would you be open to referring me?"
-- **Proof (screen rec):** Orbit's "How did it go?" card → it drafts the thank-you and sets the next reminder.
-- **CTA:** "Save this for recruiting season."
+| Day | Do this |
+|---|---|
+| 1 | LinkedIn launch post (below). Link goes in the first comment. Reply to every comment within the hour. |
+| 1 | Personal text or DM to your first 10 people (template below). Personal asks convert far better than posts. |
+| 2 | Message the next 15 people. Post in class GroupMes or Discords you're already in. |
+| 3 | Email the Beta Alpha Psi president and the finance or investment club president asking for 3 minutes at the next meeting. |
+| 4 | Short video #1 on TikTok or Reels (scripts below). |
+| 5 | Meet with the MSU Entrepreneurship Center. Bring the demo account and ask for a pilot with student orgs. |
+| 6 | Check in with everyone who signed up: "Anything confusing or broken?" Fix the top issue. |
+| 7 | LinkedIn post #2: what you learned in week one, with real numbers. |
+| 8 | Club meeting demos (3 minutes, QR code on screen). |
+| 9 | Short video #2. |
+| 10 | Email 2 or 3 accounting and finance professors offering a 2 minute class announcement. |
+| 11 | Ask every active user: "Who else should be using this?" Make it easy to share the link. |
+| 12 | Career center: ask to be listed as a student-built resource. |
+| 13 | Short video #3. |
+| 14 | Week two recap post. Decide what to double down on based on where sign-ups came from. |
 
-### 3. "Audit → TAS → IB: the path nobody explains"
-- **Hook:** "You can start in audit and end up in investment banking. Here's how people actually do it."
-- **Beats:** The common paths you've seen in your own research (audit → TAS/FDD → IB; audit → valuation → IB; audit → corp dev), what each step builds, and roughly how long people spend in each. Keep it to what you've learned from real conversations.
-- **CTA:** "I'm mapping this out by talking to people who did it — follow along."
+Ask every new user where they heard about Orbit. That tells you which channel to repeat.
 
-### 4. "My LinkedIn connection note that gets accepted"
-- **Hook:** "Stop sending blank connection requests."
-- **Beats:** Show a 200-character template: "Hi [Name] — I'm an accounting student at [School] interested in [TAS]. Saw you moved from [audit] to [TAS] at [Firm] — would love to hear how you made that jump." Explain why it works: specific, short, easy yes.
-- **CTA:** "Comment 'template' and I'll send you my 5 favorite."
+---
 
-### 5. "What I ask on every coffee chat"
-- **Hook:** "4 coffee chat questions that make people want to help you."
-- **Beats:** (1) "What do you wish you'd known before your first year?" (2) "How did you decide to move from X to Y?" (3) "What separates the people who get promoted?" (4) "Is there anyone else you think I should talk to?" ← the one that compounds.
-- **Screen rec:** Orbit meeting prep brief with questions generated for a real (blurred) chat.
+## LinkedIn launch post
 
-### 6. "Day in the life: networking as an accounting senior"
-- **Hook:** "How I network while taking 18 hours and working."
-- **Beats:** Morning: open Orbit, 3 people on the list, send 2 messages in 5 minutes. Afternoon: coffee chat. Night: dictate notes into "How did it go?".
-- **CTA:** "Free while in beta — link in bio."
-
-### 7. "I tracked every recruiting conversation for a semester"
-- **Hook:** "I tracked every networking conversation I had this semester. Here's what actually led to opportunities."
-- **Beats:** Share real numbers from your own Orbit (people connected, conversations, coffee chats, referrals). Your Today stats and relationship strength tiers make good visuals.
-- **Note:** Only use your real numbers.
-
-### 8. "Don't network like this" (contrast format)
-- **Hook:** "Networking mistakes I made as an accounting student."
-- **Beats:** Connecting with 500 people and talking to 5. Never following up. Asking for a referral in the first message. Forgetting their name at the career fair.
-- **CTA:** "I built Orbit to fix my own bad habits — link in bio."
-
-## LinkedIn posts
-
-LinkedIn is where your audience (and the professionals they want to meet) already lives. Post 3x/week.
-Personal story → lesson → soft mention. Keep the first two lines strong (that's what shows before "see more").
-
-### Post 1 — Launch / founder story
-> I've had more than 150 networking conversations on LinkedIn this year.
+> I built an app for students who are networking their way into a career.
 >
-> And I kept running into the same problem: someone would give me great advice, tell me to reach back out in
-> January, or ask for my resume… and two weeks later I couldn't remember who said what.
+> Every coffee chat ends the same way. Someone gives you great advice, tells you to send your resume, or says to
+> reach back out in January. Two weeks later you can't remember who said what.
 >
-> So I built something for it.
+> So I built Orbit. You import your LinkedIn connections and messages, and each morning it tells you who to follow
+> up with, what you talked about last time, and drafts the message. It also tracks the companies you're recruiting
+> for and who you know at each one. You still send every message yourself.
 >
-> Orbit reads your LinkedIn messages (from LinkedIn's own data export) and your calendar, then tells you each
-> morning who to follow up with — and why. It remembers what each person told you, what you promised them, and
-> drafts the follow-up. You still send every message yourself.
+> I built it for accounting and finance students first, because that's the world I'm recruiting in. It's free to
+> try for 14 days and works on your phone.
 >
-> I built it for students recruiting into accounting and finance — audit, TAS, banking, PE — because that's the
-> world I'm in, and networking is how non-target students get seen.
+> If you're recruiting this year, I'd love for you to try it and tell me what's broken. Link in the comments.
+
+Attach the 30 second demo video or the 3 screenshots from the demo account.
+
+**Week one recap post (Day 7)**, fill in real numbers:
+
+> One week ago I launched Orbit, a networking app for students. [X] students signed up, mostly from [where].
+> The most used feature so far is [feature]. The most requested is [request], which I'm building next.
+> Biggest lesson: [one honest lesson]. If you're recruiting this semester, the link is in the comments.
+
+---
+
+## Personal message to classmates (text or LinkedIn DM)
+
+> Hey [Name], I built an app for networking and recruiting and I'd love for you to try it. It reads your LinkedIn
+> messages and tells you who to follow up with each day, and drafts the message. Free for two weeks, works on your
+> phone: [link]. Honest feedback would help me a ton, even if it's "this part is confusing."
+
+## GroupMe or Discord post
+
+> Anyone recruiting this year: I built Orbit, an app that keeps track of your coffee chats and tells you who to
+> follow up with. Free to try, works on your phone. [link]. Would love feedback from people actually recruiting.
+
+## Email to a club president
+
+> Subject: 3 minute demo for [Club] members?
 >
-> It's free while I'm testing it. If you're recruiting this year, I'd love for you to try it and tell me what's
-> broken. Link in the comments.
-
-*(Edit the first line to your real number from Orbit's People tab.)*
-
-### Post 2 — The follow-up system
-> The coffee chat doesn't get you the referral. The follow-up does.
+> Hi [Name], I'm Tyrus, an accounting student at Mississippi State. I built Orbit, a free-to-try app that helps
+> students keep track of their networking: who to follow up with, what each person told them, and which companies
+> they're recruiting for. Would you be open to me doing a 3 minute demo at an upcoming meeting? It would mean a lot,
+> and I'm happy to work around your agenda.
 >
-> Here's the system I use:
-> 1. Thank-you within 24 hours — mention one specific thing they said.
-> 2. 3–4 weeks later — a short update on what you did with their advice.
-> 3. When applications open — "Would you be open to referring me?"
+> Thanks, Tyrus
+
+## Email to a professor
+
+> Subject: Student-built recruiting tool, 2 minute announcement?
 >
-> Most students stop after step 1. That's where the opportunity is.
+> Hi Professor [Name], I'm Tyrus Burton, an accounting student. I built a free-to-try app called Orbit that helps
+> students organize their recruiting networking, and I'm looking for classmates to try it during recruiting season.
+> Would you be willing to let me share it for two minutes at the start of class, or post the link on Canvas? Happy
+> to show you how it works first.
 >
-> (I got so bad at remembering step 2 that I built an app to remind me. More on that soon.)
+> Thank you, Tyrus
 
-### Post 3 — Build in public
-> Two weeks ago I started building a networking app between classes. Here's what I've learned so far: …
-> *(Share 3 honest lessons: what you built, what broke, what a first user said. Add a screenshot of the Today screen.)*
+---
 
-### Post 4 — The path post
-> I keep asking people the same question: how did you get from audit to M&A?
-> Here are the patterns I've seen after [N] conversations: …
-> *(Use what your contacts actually told you. This also flatters the people you've talked to — tag none without permission.)*
+## Short video scripts (15 to 40 seconds, vertical)
 
-### Post 5 — Ask for beta users
-> Looking for 25 accounting/finance students to beta test something I built.
-> If you're recruiting for internships or full-time and you network on LinkedIn, comment "beta" and I'll DM you
-> a link. In exchange: 15 minutes of honest feedback.
+Record from the demo account so no real names show.
 
-## 30-day calendar
+**1. "I forgot what everyone told me"**
+- Hook (on screen): "I did 40 coffee chats and forgot half of what people told me."
+- "Someone tells you to send your resume, or reach back out in January, and then you forget."
+- Screen recording: Today screen. "So I built Orbit. Every morning it tells me who to follow up with."
+- Screen recording: a person's page. "It remembers what they said and what I promised."
+- "Free to try. Link in bio."
 
-Rhythm: **TikTok/Reels 4x/week, LinkedIn 3x/week**, plus one direct community push per week. Batch-film on
-Sundays (4 videos in ~1 hour).
+**2. "The follow-up nobody does"**
+- Hook: "The coffee chat doesn't get you the referral. The follow-up does."
+- Three steps on screen: thank you within 24 hours that mentions one thing they said. An update three or four
+  weeks later on what you did with their advice. Then, when applications open, ask about a referral.
+- Screen recording: the outreach queue drafting a follow-up. "Orbit reminds me and drafts it."
 
-| Day | TikTok / Reels | LinkedIn | Community / direct |
-|---|---|---|---|
-| 1 | #1 "I built an app…" | Post 1 (launch story) | Text 10 friends recruiting this year |
-| 2 | — | — | Post in MSU accounting/finance GroupMe/Discord |
-| 3 | #4 connection note | — | — |
-| 4 | — | Post 2 (follow-up system) | DM 10 people who engaged |
-| 5 | #2 follow-up nobody does | — | — |
-| 6 | — | — | Ask Beta Alpha Psi officer for 5 min at a meeting |
-| 7 | #5 coffee chat questions | Post 5 (beta testers) | — |
-| 8 | — | — | Onboard beta testers 1:1 (watch them use it) |
-| 9 | #6 day in the life | — | — |
-| 10 | — | Post 3 (build in public: week 1) | Reddit: give value in r/Accounting / r/FinancialCareers (no link unless asked; follow sub rules) |
-| 11 | #8 mistakes | — | — |
-| 12 | — | — | Email a professor who teaches audit/advanced accounting |
-| 13 | #3 audit → TAS → IB | Post 4 (the path) | — |
-| 14 | — | — | Fix the top 3 issues beta users reported |
-| 15 | Feature demo: Ask My Network | — | — |
-| 16 | — | Build-in-public: first users + what they said | — |
-| 17 | Reply-to-comment video (answer a real question) | — | Career center: ask to be listed as a student resource |
-| 18 | — | Template carousel (connection note, thank-you, follow-up) | — |
-| 19 | Feature demo: meeting prep | — | — |
-| 20 | — | — | Finance club / investment club demo (5 min) |
-| 21 | #7 tracked a semester (real numbers) | — | — |
-| 22 | — | Lesson post: what users actually use | — |
-| 23 | Firms pipeline demo ("who do I know at Deloitte?") | — | — |
-| 24 | — | — | Partner with 1–2 student creators in finance (free Pro for a post) |
-| 25 | Reply-to-comment video | Recruiting timeline post | — |
-| 26 | — | — | Ask every active user for a referral (invite a friend) |
-| 27 | "Things I'd do differently" | — | — |
-| 28 | — | Month recap: users, lessons, what's next | — |
-| 29 | Best-performing video, re-cut | — | — |
-| 30 | Behind the scenes: talking to users | — | Plan month 2 from what worked |
+**3. "Who do I know at Deloitte?"**
+- Hook: "Applying to a company? Check who you already know there first."
+- Screen recording: Companies tab, open a company, show your relationships and the suggested next move.
+- "Message them before you apply. Link in bio."
 
-## Rules of thumb
+---
 
-- **Only real numbers and real quotes.** No invented stats or testimonials — get permission before quoting a user.
-- **Never post screenshots that show other people's names or messages.** Use demo data or blur them.
-- **Follow each platform's rules** on self-promotion (especially Reddit) — lead with help, mention Orbit only when it's relevant.
-- **Reply to every comment** in the first hour; turn good questions into the next video.
-- **Track weekly:** followers, profile → site clicks, sign-ups, sign-ups who import LinkedIn (activation), people
-  still active after 2 weeks. Activation and retention matter more than views.
+## Club meeting demo (3 minutes)
 
-## Hashtags (3–5 per post)
+1. The problem (20 seconds): "Who here has forgotten what someone told them on a coffee chat?"
+2. Show Today on the demo account: ranked people, why now, drafted message (40 seconds).
+3. Open one person: memory, open loops, "In common" (40 seconds).
+4. Companies tab: who you know at a target firm (30 seconds).
+5. QR code on screen: "Free for two weeks, takes five minutes to set up. Tell me what's broken." (30 seconds)
 
-`#accountingstudent` `#cpa` `#financecareers` `#networking` `#coffeechat` `#investmentbanking` `#big4`
-`#internship` `#studentfounder` `#buildinpublic`
+---
+
+## Track weekly
+
+| Metric | Where to find it |
+|---|---|
+| Sign-ups | Supabase, Authentication, Users |
+| Imported LinkedIn | People count above zero for that user |
+| Coming back | Vercel Analytics, returning visitors |
+| Where they heard about it | Ask every new user |
+| AI spend | console.anthropic.com, Usage |
