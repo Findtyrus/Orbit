@@ -84,12 +84,16 @@ const P = [
         [47, "in", "Happy to help a fellow audit person. How does Thursday at 4 work?"],
         [42, "call", "Talked for 25 minutes. Two years in audit is plenty, learn to read a QoE report, and network with the Dallas TAS team before recruiting opens. Offered to pass my resume to the campus recruiter."],
         [40, "out", "Thanks again for the time yesterday. The advice on reading QoE reports was exactly what I needed. I'll send my updated resume this week."],
-        [12, "in", "Hey Avery, just checking in. Did you finish that resume update? Campus recruiting kicks off in a few weeks."]],
+        [30, "meeting", "Coffee during the RSM Dallas office tour"],
+        [30, "note", "Met two of his teammates on the office tour. He introduced me as someone he'd vouch for."],
+        [12, "in", "Hey Avery, just checking in. Did you finish that resume update? Campus recruiting kicks off in a few weeks."],
+        [6, "out", "Thanks for the nudge, Marcus. Finishing the last edits this weekend."],
+        [5, "in", "Sounds good. Send it over when it's ready and I'll pass it along."]],
     memory: { summary: "Marcus moved from audit at Forvis Mazars into transaction advisory at RSM in Dallas. He is your strongest TAS contact and offered to pass your resume to RSM's campus recruiter.",
       career: ["Audit Senior at Forvis Mazars for 2 years", "Moved to RSM Transaction Advisory in Dallas"], told: ["Two years in audit is enough before switching", "Learn to read a quality of earnings report", "Network with the Dallas TAS team before recruiting opens"],
       you: ["You're on the CPA track", "You want TAS in Dallas"], advice: ["Network before recruiting opens, not after", "Practice reading QoE reports"], personal: [],
       points: ["Your QoE practice since the call", "When RSM's campus recruiting opens"], loops: [["Send updated resume to Marcus", "me", 2]],
-      next: "Send Marcus your updated resume and thank him for the reminder.", why: "He followed up 12 days ago and offered to forward it before recruiting opens.", follow: 0,
+      next: "Send Marcus your updated resume and thank him for the reminder.", why: "He offered to pass your resume along and recruiting opens in a few weeks.", follow: 0,
       msg: "Hi Marcus, sorry for the slow reply. Here's my updated resume. Since we talked I've been working through a couple of QoE reports like you suggested. Thanks again for offering to pass it along to the campus team.",
       common: ["Both started in audit"], tags: ["Audit to TAS", "Dallas"] } },
   { k: "priya", first: "Priya", last: "Natarajan", title: "Senior Consultant, Financial Due Diligence", company: "Deloitte", cadence: 60, stage: "Chatted",
@@ -107,7 +111,8 @@ const P = [
     memory: null },
   { k: "hannah", first: "Hannah", last: "Whitfield", title: "Audit Manager", company: "KPMG", cadence: 30, starred: true, stage: "Mentor",
     h: [[120, "meeting", "Beta Alpha Psi alumni panel"], [118, "out", "Thank you for speaking at the Beta Alpha Psi panel. Your story about starting at a regional firm really stuck with me."],
-        [117, "in", "Of course. Always happy to help a Bulldog. Keep me posted on your internship search."], [60, "call", "Monthly check-in. She offered to do a mock interview before KPMG superdays."], [45, "out", "Thanks for the mock interview offer, I'll take you up on it when superdays are scheduled."]],
+        [117, "in", "Of course. Always happy to help a Bulldog. Keep me posted on your internship search."], [60, "call", "Monthly check-in. She offered to do a mock interview before KPMG superdays."], [45, "out", "Thanks for the mock interview offer, I'll take you up on it when superdays are scheduled."],
+        [44, "in", "Anytime. Just let me know when your superday is set."]],
     memory: { summary: "Hannah is an Audit Manager at KPMG and a Mississippi State alum. She spoke at Beta Alpha Psi and has become a mentor, offering a mock interview before superdays.",
       career: ["Started at a regional CPA firm", "Audit Manager at KPMG"], told: ["Regional firm experience helped her stand out"], you: ["You're in Beta Alpha Psi", "Interviewing with KPMG"],
       advice: ["Lean on regional firm experience in interviews"], personal: ["Mississippi State alum"], points: ["Your KPMG superday date", "Taking her up on the mock interview"],
@@ -188,13 +193,14 @@ for (const p of P) {
 }
 
 // ---------- companies ----------
+// Rows in one bulk insert must share columns, so every row lists aliases.
 must(await db.from("firms").insert([
-  { user_id: uid, name: "RSM", category: "Advisory", stage: "Networking", priority: 1, deadline: date(9), role: "TAS Intern, Dallas" },
+  { user_id: uid, name: "RSM", aliases: [], category: "Advisory", stage: "Networking", priority: 1, deadline: date(9), role: "TAS Intern, Dallas" },
   { user_id: uid, name: "Alvarez & Marsal", aliases: ["A&M"], category: "Advisory", stage: "Networking", priority: 1, role: "Transaction Advisory Intern" },
-  { user_id: uid, name: "Deloitte", category: "Big 4", stage: "Referral", priority: 2, deadline: date(12), role: "FDD Intern" },
-  { user_id: uid, name: "KPMG", category: "Big 4", stage: "Interviewing", priority: 2, role: "Audit Intern" },
-  { user_id: uid, name: "Forvis Mazars", category: "Regional CPA", stage: "Applied", priority: 2, role: "Advisory Intern" },
-  { user_id: uid, name: "Raymond James", category: "Middle-market IB", stage: "Researching", priority: 3, role: "IB Summer Analyst" },
+  { user_id: uid, name: "Deloitte", aliases: [], category: "Big 4", stage: "Referral", priority: 2, deadline: date(12), role: "FDD Intern" },
+  { user_id: uid, name: "KPMG", aliases: [], category: "Big 4", stage: "Interviewing", priority: 2, role: "Audit Intern" },
+  { user_id: uid, name: "Forvis Mazars", aliases: [], category: "Regional CPA", stage: "Applied", priority: 2, role: "Advisory Intern" },
+  { user_id: uid, name: "Raymond James", aliases: [], category: "Middle-market IB", stage: "Researching", priority: 3, role: "IB Summer Analyst" },
 ]));
 
 // ---------- meetings ----------
