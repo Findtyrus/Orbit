@@ -30,7 +30,10 @@ export function TabBar() {
       <div className="mx-auto flex max-w-xl">
         {TABS.map((t) => {
           // "Ask your network" lives under People.
-          const active = t.href === "/" ? path === "/" : path.startsWith(t.href) || (t.href === "/contacts" && path.startsWith("/ask"));
+          // Whole path segments only ("/me" must not match "/meetings"). Ask lives under People, meetings under Calendar.
+          const under = (base: string) => path === base || path.startsWith(`${base}/`);
+          const active = t.href === "/" ? path === "/"
+            : under(t.href) || (t.href === "/contacts" && under("/ask")) || (t.href === "/calendar" && under("/meetings"));
           return (
             <Link key={t.href} href={t.href}
               className={`relative flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-[10.5px] font-medium tracking-wide ${active ? "text-accent" : "text-faint"}`}>
