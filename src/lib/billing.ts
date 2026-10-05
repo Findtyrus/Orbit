@@ -13,8 +13,9 @@ export const PLAN_LIMITS = {
     memories: num(process.env.DAILY_MEMORY_LIMIT, 200),
     asks: num(process.env.DAILY_ASK_LIMIT, 25),
     preps: num(process.env.DAILY_PREP_LIMIT, 15),
+    drafts: num(process.env.DAILY_DRAFT_LIMIT, 10),
   },
-  free: { memories: 10, asks: 3, preps: 2 },
+  free: { memories: 10, asks: 3, preps: 2, drafts: 3 },
 };
 export const FREE_FIRM_LIMIT = 3;
 export type UsageKind = keyof typeof PLAN_LIMITS.pro;

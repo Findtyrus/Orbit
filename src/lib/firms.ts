@@ -37,3 +37,12 @@ export function worksAt(company: string | null | undefined, firm: Pick<Firm, "na
     return k.length >= 2 && c.includes(` ${k} `);
   });
 }
+
+// Rough seniority so the most useful cold contacts surface first (analysts/associates reply to students most).
+export function approachability(title: string | null) {
+  const t = (title ?? "").toLowerCase();
+  if (/intern/.test(t)) return 1;
+  if (/analyst|associate|senior|staff|consultant/.test(t)) return 3;
+  if (/manager|vice president|\bvp\b/.test(t)) return 2;
+  return 1.5;
+}

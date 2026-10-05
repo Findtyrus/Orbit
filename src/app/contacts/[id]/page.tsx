@@ -3,6 +3,7 @@ import { getUser } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ContactRow";
 import { StrengthBadge } from "@/components/StrengthBadge";
 import { CopyText, LoopCheck, MessageButton, RefreshBrainButton } from "@/components/client";
+import { gmailComposeHref, mailtoHref } from "@/lib/email-draft";
 import {
   CADENCES, fullName, relDays,
   type Commitment, type ContactStatus, type Facts, type Interaction, type Synopsis,
@@ -138,10 +139,22 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
             <CopyText text={synopsis.suggested_message} />
           </div>
           <p className="mt-2 whitespace-pre-line text-sm">{synopsis.suggested_message}</p>
-          <MessageButton message={synopsis.suggested_message} linkedinUrl={c.linkedin_url} email={c.email}
-            className="mt-3 w-full rounded-md bg-accent py-2 text-sm font-medium text-accent-ink" />
+          <div className="mt-3 flex gap-2">
+            {c.linkedin_url && (
+              <MessageButton message={synopsis.suggested_message} linkedinUrl={c.linkedin_url} email={null}
+                className="flex-1 rounded-md bg-accent py-2 text-sm font-medium text-accent-ink" />
+            )}
+            {c.email && (
+              <>
+                <a href={mailtoHref(c.email, null, synopsis.suggested_message)}
+                  className={`flex-1 rounded-md py-2 text-center text-sm font-medium ${c.linkedin_url ? "border border-line" : "bg-accent text-accent-ink"}`}>Email draft</a>
+                <a href={gmailComposeHref(c.email, null, synopsis.suggested_message)} target="_blank" rel="noopener noreferrer"
+                  className="rounded-md border border-line px-3 py-2 text-sm font-medium">Gmail</a>
+              </>
+            )}
+          </div>
           <p className="mt-2 text-center text-xs text-muted">
-            Copies the draft and opens {c.linkedin_url ? "LinkedIn" : "email"}. You edit and send it yourself.
+            Opens a draft in LinkedIn or your email. You review it and send it yourself.
           </p>
         </section>
       )}

@@ -3,6 +3,7 @@ import { createAdminClient } from "./supabase/admin";
 import { buildBrain, staleBrainIds } from "./brain";
 import { spendAI } from "./limits";
 import { syncGoogle } from "./google";
+import { buildQueue } from "./outreach";
 
 const CONCURRENCY = 4;
 
@@ -44,7 +45,10 @@ export async function runScheduledJobs(budgetMs: number) {
   for (const p of people ?? []) {
     const left = deadline - Date.now();
     if (left < 90_000) break;
-    results.push({ user: p.user_id, memories: await buildBrainsFor(p.user_id, Math.min(left, 120_000)) });
+    const memories = await buildBrainsFor(p.user_id, Math.min(left, 120_000));
+    // Fresh drafts waiting each morning (after memories, so drafts can use them).
+    const drafts = await buildQueue(db, p.user_id).catch((e) => { console.error("queue failed", e); return 0; });
+    results.push({ user: p.user_id, memories, drafts });
   }
   return results;
 }

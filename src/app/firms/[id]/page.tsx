@@ -3,20 +3,11 @@ import { notFound } from "next/navigation";
 import { getUser } from "@/lib/supabase/server";
 import { ContactRow } from "@/components/ContactRow";
 import { StageBadge } from "@/components/StageBadge";
-import { FIRM_CATEGORIES, FIRM_STAGES, worksAt, type Firm } from "@/lib/firms";
+import { approachability, FIRM_CATEGORIES, FIRM_STAGES, worksAt, type Firm } from "@/lib/firms";
 import { fullName, type ContactStatus } from "@/lib/types";
 import { deleteFirm, updateFirm } from "../../firm-actions";
 
 const field = "w-full rounded-md border border-line bg-card px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-accent";
-
-// Rough seniority so the most useful cold contacts surface first (analysts/associates reply to students most).
-function approachability(title: string | null) {
-  const t = (title ?? "").toLowerCase();
-  if (/intern/.test(t)) return 1;
-  if (/analyst|associate|senior|staff|consultant/.test(t)) return 3;
-  if (/manager|vice president|\bvp\b/.test(t)) return 2;
-  return 1.5;
-}
 
 function nextMove(f: Firm, known: ContactStatus[], cold: ContactStatus[]) {
   const best = known[0];

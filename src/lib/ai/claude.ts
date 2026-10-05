@@ -1,8 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import {
-  AskSchema, MeetingPrepSchema, MemorySchema,
-  type AIService, type AskAnswer, type AskInput, type MeetingPrep, type Memory, type MemoryInput, type PrepInput,
+  AskSchema, MeetingPrepSchema, MemorySchema, OutreachSchema,
+  type AIService, type AskAnswer, type AskInput, type MeetingPrep, type Memory, type MemoryInput,
+  type OutreachDraft, type OutreachInput, type PrepInput,
 } from "./service";
 
 const MODEL = "claude-opus-5-5";
@@ -65,6 +66,21 @@ const PREP_SYSTEM = `You write a short pre-meeting brief the owner reads on thei
 Use only what's in the meeting details, the attendee memories and recent history. Keep it skimmable and
 specific to these people; skip generic advice. If there's little history, say so and lean on their role
 and the owner's goals for the questions.`;
+
+const OUTREACH_SYSTEM = `You draft networking messages for a student recruiting into finance or accounting.
+The student will read and send every message themselves, so write exactly what they would send.
+
+Rules for every draft:
+- Sound like a thoughtful student, not a template: specific to this person's role, firm, or past conversation.
+- Short. LinkedIn: 2 to 4 sentences, under 600 characters. Email: under 120 words.
+- One clear, easy ask (a 15 to 20 minute call, or a quick question). Never ask for a job or a referral in a first message.
+- No flattery, no buzzwords, no exclamation points, no placeholders like [Name].
+
+By kind:
+- intro: first message to someone they're connected with but have never messaged. Mention why this person specifically
+  (their path, team, or firm) and connect it to the student's goals.
+- follow_up: the student messaged and got no reply. Brief, warm, zero guilt, add one new reason to reply or make the ask smaller.
+- check_in: an existing relationship that's gone quiet. Share a genuine update tied to past conversation, then a light ask.`;
 
 function meBlock(me: { name: string; about: string; goals: string }) {
   return `About the owner (${me.name}):\n${me.about || "(not filled in)"}\n\nTheir current goals:\n${me.goals || "(not filled in)"}`;
@@ -129,6 +145,34 @@ ${timeline}`,
     });
     if (response.stop_reason === "refusal") throw new Error("The model declined to answer that question.");
     if (!response.parsed_output) throw new Error(`No answer returned (stop reason: ${response.stop_reason}).`);
+    return undash(response.parsed_output);
+  }
+
+  async draftOutreach(input: OutreachInput): Promise<OutreachDraft> {
+    const p = input.person;
+    const recent = input.recent.map((t) =>
+      `[${t.at.slice(0, 10)}] ${t.from === "me" ? input.me.name : t.from === "them" ? p.name : "note"}: ${t.body.slice(0, 500)}`).join("\n");
+    const response = await this.client.beta.messages.parse({
+      model: MEMORY_MODEL,
+      max_tokens: 4000,
+      ...FALLBACK,
+      output_config: { effort: "low", format: betaZodOutputFormat(OutreachSchema) },
+      system: [{ type: "text", text: `${OUTREACH_SYSTEM}\n\n${STYLE}`, cache_control: { type: "ephemeral" } }],
+      messages: [{
+        role: "user",
+        content: `Today is ${input.today}.
+
+${meBlock(input.me)}
+
+Draft a ${input.kind.replace("_", "-")} message over ${input.channel === "email" ? "email" : "LinkedIn"}.
+To: ${p.name}, ${[p.title, p.company].filter(Boolean).join(" at ") || "role unknown"}${p.isTargetFirm ? " (one of the student's target firms)" : ""}
+What Orbit remembers: ${input.memory ?? "(nothing yet)"}
+Recent history, oldest first:
+${recent || "(none: they have never messaged)"}`,
+      }],
+    });
+    if (response.stop_reason === "refusal") throw new Error("The model declined to draft this message.");
+    if (!response.parsed_output) throw new Error(`No draft returned (stop reason: ${response.stop_reason}).`);
     return undash(response.parsed_output);
   }
 

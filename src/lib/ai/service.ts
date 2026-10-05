@@ -11,7 +11,25 @@ export interface AIService {
   askNetwork(input: AskInput): Promise<AskAnswer>;
   /** Brief for an upcoming meeting. */
   prepMeeting(input: PrepInput): Promise<MeetingPrep>;
+  /** One outreach draft (cold intro, follow-up, or check-in) for the daily queue. */
+  draftOutreach(input: OutreachInput): Promise<OutreachDraft>;
 }
+
+export type OutreachInput = {
+  today: string;
+  me: { name: string; about: string; goals: string };
+  kind: "intro" | "follow_up" | "check_in";
+  channel: "linkedin" | "email";
+  person: { name: string; title: string | null; company: string | null; isTargetFirm: boolean };
+  memory: string | null;        // relationship summary, if built
+  recent: TimelineEntry[];      // newest last
+};
+
+export const OutreachSchema = z.object({
+  subject: z.string().describe("Email subject line, under 60 characters. Empty string for LinkedIn."),
+  body: z.string().describe("The message, ready to send after a quick read."),
+});
+export type OutreachDraft = z.infer<typeof OutreachSchema>;
 
 export type PrepInput = {
   today: string;

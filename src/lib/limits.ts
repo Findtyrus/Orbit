@@ -14,7 +14,7 @@ export async function spendAI(userId: string, kind: UsageKind, n = 1): Promise<b
   return data === true;
 }
 
-const LABEL: Record<UsageKind, string> = { memories: "memory updates", asks: "questions", preps: "meeting briefs" };
+const LABEL: Record<UsageKind, string> = { memories: "memory updates", asks: "questions", preps: "meeting briefs", drafts: "outreach drafts" };
 
 export const limitMessage = (kind: UsageKind) =>
   `You've used today's ${LABEL[kind]}. It resets at midnight UTC, or upgrade to Orbit Pro for more.`;

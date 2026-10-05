@@ -10,6 +10,7 @@ import { LoopCheck, MessageButton } from "@/components/client";
 import { fullName, isOlderThan, isoDate, relDays, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
 import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
+import { OutreachQueue, type QueueItem } from "@/components/OutreachQueue";
 
 type Meeting = { id: string; title: string; start_at: string; end_at: string; contact_ids: string[]; attendees: { name: string | null; email: string }[]; debriefed: boolean };
 
@@ -104,7 +105,7 @@ export default async function TodayPage() {
     // select("*") so a not-yet-applied column (e.g. tour_done_at) can't break this query.
     supabase.from("profiles").select("*").maybeSingle(),
   ]);
-  const [{ data: meetingRows }, { data: google }, { data: deadlineRows }] = await Promise.all([
+  const [{ data: meetingRows }, { data: google }, { data: deadlineRows }, { data: queueRows }] = await Promise.all([
     supabase.from("meetings").select("id, title, start_at, end_at, contact_ids, attendees, debriefed")
       .gte("end_at", new Date(Date.parse(today) - 3 * 86_400_000).toISOString())
       .lte("start_at", new Date(Date.parse(today) + 3 * 86_400_000).toISOString())
@@ -113,7 +114,22 @@ export default async function TodayPage() {
     supabase.from("firms").select("id, name, role, deadline, stage")
       .gte("deadline", today).lte("deadline", isoDate(14)).not("stage", "in", "(Applied,Interviewing,Offer,Closed)")
       .order("deadline"),
+    supabase.from("outreach_queue").select("id, contact_id, kind, reason, channel, subject, body, status")
+      .eq("for_date", today).neq("status", "skipped"),
   ]);
+  const queueIds = (queueRows ?? []).map((q) => q.contact_id);
+  const { data: queueContacts } = queueIds.length
+    ? await supabase.from("contacts").select("id, first_name, last_name, title, company, email, linkedin_url").in("id", queueIds)
+    : { data: [] };
+  const qc = new Map((queueContacts ?? []).map((c) => [c.id, c]));
+  const queue: QueueItem[] = (queueRows ?? []).filter((q) => q.status === "pending" && qc.has(q.contact_id)).map((q) => {
+    const c = qc.get(q.contact_id)!;
+    return {
+      id: q.id, kind: q.kind, reason: q.reason, channel: q.channel, subject: q.subject, body: q.body,
+      contact: { id: c.id, name: fullName(c), subtitle: [c.title, c.company].filter(Boolean).join(" · "), email: c.email, linkedin_url: c.linkedin_url },
+    };
+  });
+  const sentToday = (queueRows ?? []).filter((q) => q.status === "sent").length;
 
   // Keep Gmail/Calendar fresh without a button: sync in the background after this page is sent.
   if (user && google && !google.needs_reconnect && process.env.SUPABASE_SECRET_KEY &&
@@ -241,6 +257,8 @@ export default async function TodayPage() {
           </div>
         </section>
       )}
+
+      <OutreachQueue items={queue} sentToday={sentToday} canPrepare={!!process.env.ANTHROPIC_API_KEY} />
 
       <section>
         <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">Who to talk to today</h2>
