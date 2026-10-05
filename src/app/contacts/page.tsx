@@ -47,7 +47,10 @@ export default async function ContactsPage({ searchParams }: PageProps<"/contact
 
   return (
     <div className="space-y-4">
-      <h1 className="text-3xl font-semibold tracking-tight">People</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-semibold tracking-tight">People</h1>
+        <Link href="/contacts/new" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink">+ Add</Link>
+      </div>
       <Link href="/ask" className="flex items-center justify-between rounded-lg border border-accent/15 bg-accent-soft px-4 py-3">
         <div>
           <div className="text-sm font-medium text-accent">Ask your network</div>

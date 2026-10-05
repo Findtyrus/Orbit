@@ -74,3 +74,21 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/welcome");
 }
+
+export async function requestPasswordReset(_prev: string | null, form: FormData): Promise<string | null> {
+  const email = String(form.get("email") ?? "").trim();
+  if (!email) return "Enter your email.";
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${await origin()}/auth/callback?next=/reset` });
+  // Same message whether or not the account exists, so this can't be used to probe for emails.
+  return "If that email has an Orbit account, a reset link is on its way. Check spam too.";
+}
+
+export async function setNewPassword(_prev: string | null, form: FormData): Promise<string | null> {
+  const password = String(form.get("password") ?? "");
+  if (password.length < 8) return "Use at least 8 characters.";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return "That reset link has expired. Request a new one from Forgot password.";
+  redirect("/");
+}

@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Pages anyone can see. Cron authenticates with CRON_SECRET instead of a session.
-const PUBLIC = ["/login", "/signup", "/auth", "/welcome", "/privacy", "/terms", "/manifest.webmanifest", "/api/cron", "/api/stripe/webhook"];
+const PUBLIC = ["/login", "/signup", "/forgot", "/auth", "/welcome", "/privacy", "/terms", "/manifest.webmanifest", "/api/cron", "/api/stripe/webhook"];
 
 const REQUIRED = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"] as const;
 

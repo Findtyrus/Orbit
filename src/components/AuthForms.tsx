@@ -31,7 +31,10 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      <p className="text-center text-sm text-muted">New here? <Link href="/signup" className="font-medium text-accent">Create an account</Link></p>
+      <div className="flex justify-between text-sm text-muted">
+        <Link href="/forgot">Forgot password?</Link>
+        <Link href="/signup" className="font-medium text-ink">Create an account</Link>
+      </div>
     </div>
   );
 }

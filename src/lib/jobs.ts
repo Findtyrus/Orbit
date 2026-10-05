@@ -1,7 +1,8 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
 import { buildBrain, staleBrainIds } from "./brain";
-import { claimAI } from "./limits";
+import { aiAccess, claimAI } from "./limits";
+import { TRIAL_MEMORY_PEOPLE } from "./billing";
 import { syncGoogle } from "./google";
 import { buildQueue } from "./outreach";
 
@@ -14,10 +15,13 @@ const CONCURRENCY = 4;
 export async function buildBrainsFor(userId: string, budgetMs = 240_000) {
   if (!process.env.ANTHROPIC_API_KEY) return { built: 0, remaining: 0 };
   const db = createAdminClient();
+  const access = await aiAccess(userId);
+  if (!access.active) return { built: 0, remaining: 0 };
+  const onlyTop = access.tier === "trial" ? TRIAL_MEMORY_PEOPLE : undefined;
   const deadline = Date.now() + budgetMs;
   let built = 0;
   for (;;) {
-    const { ids, remaining } = await staleBrainIds(db, userId, CONCURRENCY);
+    const { ids, remaining } = await staleBrainIds(db, userId, CONCURRENCY, onlyTop);
     if (!ids.length || Date.now() > deadline - 60_000) return { built, remaining };
     if ((await claimAI(userId, "memories", ids.length)) !== null) return { built, remaining };
     const results = await Promise.allSettled(ids.map((id) => buildBrain(db, userId, id)));

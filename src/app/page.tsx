@@ -183,10 +183,18 @@ export default async function TodayPage() {
       </header>
 
       {counts.count === 0 && (
-        <Link href="/me" className="block rounded-lg bg-accent p-5 text-accent-ink">
-          <div className="font-semibold">Import your LinkedIn network →</div>
-          <div className="mt-1 text-sm opacity-90">Upload your LinkedIn data export to get started.</div>
-        </Link>
+        <section className="space-y-2 rounded-lg border border-line bg-card p-4">
+          <h2 className="font-semibold">Get your network into Orbit</h2>
+          <p className="text-sm text-muted">
+            LinkedIn can take up to a day to send your data export. While you wait, add the people you&apos;re already
+            talking to and add your target companies.
+          </p>
+          <div className="grid grid-cols-2 gap-2 pt-1 text-sm font-medium">
+            <Link href="/contacts/new" className="rounded-md bg-accent py-2 text-center text-accent-ink">Add a person</Link>
+            <Link href="/firms" className="rounded-md border border-line py-2 text-center">Add companies</Link>
+          </div>
+          <Link href="/me" className="block pt-1 text-sm underline decoration-line-strong underline-offset-2">Got your LinkedIn export? Import it</Link>
+        </section>
       )}
 
       {plan?.source === "trial" && plan.trialDaysLeft <= 5 && (

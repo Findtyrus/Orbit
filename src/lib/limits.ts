@@ -4,14 +4,15 @@ import { planFrom, PLAN_LIMITS, type UsageKind } from "./billing";
 
 export type { UsageKind };
 
-export type AIAccess = { active: boolean; reason?: "off" | "needs_pro" };
+export type AIAccess = { active: boolean; tier?: "pro" | "trial"; reason?: "off" | "needs_pro" };
 
 const allowlisted = (email: string | undefined) =>
   !!email && (process.env.AI_ALLOWED_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).includes(email.toLowerCase());
 
 /**
  * Who can use AI (every AI call goes through here, so nothing bypasses it):
- * paying subscribers, accounts in AI_ALLOWED_EMAILS, and trial accounts only when AI_IN_TRIAL=true.
+ * paying subscribers and accounts in AI_ALLOWED_EMAILS (full limits), and trial accounts (small limits,
+ * unless AI_IN_TRIAL=false).
  * Anyone can also switch AI off for their own account.
  */
 export async function aiAccess(userId: string): Promise<AIAccess> {
@@ -23,10 +24,11 @@ export async function aiAccess(userId: string): Promise<AIAccess> {
     db.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
   ]);
   if (prof && prof.ai_enabled === false) return { active: false, reason: "off" };
-  if (allowlisted(u.user?.email)) return { active: true };
+  if (allowlisted(u.user?.email)) return { active: true, tier: "pro" };
   const plan = planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub);
-  if (plan.source === "subscription") return { active: true };
-  if (plan.source === "trial" && process.env.AI_IN_TRIAL === "true") return { active: true };
+  if (plan.source === "subscription") return { active: true, tier: "pro" };
+  // Trials get a limited taste of AI unless AI_IN_TRIAL=false.
+  if (plan.source === "trial" && process.env.AI_IN_TRIAL !== "false") return { active: true, tier: "trial" };
   return { active: false, reason: "needs_pro" };
 }
 
@@ -48,8 +50,11 @@ export async function claimAI(userId: string, kind: UsageKind, n = 1): Promise<s
   const access = await aiAccess(userId);
   if (!access.active) return accessMessage(access);
   const { data, error } = await createAdminClient().rpc("spend_ai", {
-    p_user: userId, p_kind: kind, p_cap: PLAN_LIMITS.pro[kind], p_n: n,
+    p_user: userId, p_kind: kind, p_cap: PLAN_LIMITS[access.tier ?? "pro"][kind], p_n: n,
   });
   if (error) throw new Error(`Usage check failed: ${error.message}`);
-  return data === true ? null : limitMessage(kind);
+  if (data === true) return null;
+  return access.tier === "trial"
+    ? `You've used today's trial ${LABEL[kind]}. Upgrade to Pro for more, or come back tomorrow.`
+    : limitMessage(kind);
 }

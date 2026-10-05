@@ -3,6 +3,7 @@ import { getUser } from "@/lib/supabase/server";
 import { BrainBuilder } from "@/components/client";
 import { ProfileForm, type ProfileRow } from "@/components/ProfileForm";
 import { getPlan, PLAN_LIMITS } from "@/lib/billing";
+import { aiAccess } from "@/lib/limits";
 import { openBillingPortal } from "../billing-actions";
 import { refreshFromStripe } from "@/lib/billing-sync";
 import { gmailAllowed } from "@/lib/google";
@@ -30,7 +31,8 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
   }
   const plan = await getPlan(supabase, user!);
   const themePref = (await cookies()).get("theme")?.value;
-  const limits = PLAN_LIMITS[plan.tier];
+  const access = await aiAccess(user!.id);
+  const limits = PLAN_LIMITS[access.tier ?? "free"];
   const googleConfigured = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.SUPABASE_SECRET_KEY);
 
   return (

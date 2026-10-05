@@ -7,9 +7,10 @@ const FEATURES: [string, string, string][] = [
   ["People, timelines & Today list", "✓", "✓"],
   ["LinkedIn import & Google Calendar", "✓", "✓"],
   ["Target companies in your pipeline", `${FREE_FIRM_LIMIT}`, "Unlimited"],
-  ["AI memory updates per day", `${PLAN_LIMITS.free.memories}`, `${PLAN_LIMITS.pro.memories}`],
-  ["Ask your network per day", `${PLAN_LIMITS.free.asks}`, `${PLAN_LIMITS.pro.asks}`],
-  ["Meeting prep briefs per day", `${PLAN_LIMITS.free.preps}`, `${PLAN_LIMITS.pro.preps}`],
+  ["AI relationship memories", "Not included", `Up to ${PLAN_LIMITS.pro.memories}/day`],
+  ["AI outreach drafts per day", "Not included", `${PLAN_LIMITS.pro.drafts}`],
+  ["Ask your network per day", "Not included", `${PLAN_LIMITS.pro.asks}`],
+  ["Meeting prep briefs per day", "Not included", `${PLAN_LIMITS.pro.preps}`],
 ];
 
 export default async function UpgradePage() {
@@ -25,8 +26,8 @@ export default async function UpgradePage() {
         <p className="mt-1 text-muted">Everything you need for recruiting season.</p>
         {plan.source === "trial" && (
           <p className="mt-3 rounded-lg border border-accent/15 bg-accent-soft p-3 text-sm text-accent">
-            Your free Pro trial has {plan.trialDaysLeft} day{plan.trialDaysLeft === 1 ? "" : "s"} left. Subscribe now and
-            you won&apos;t be charged until it ends.
+            Your free trial has {plan.trialDaysLeft} day{plan.trialDaysLeft === 1 ? "" : "s"} left, with a limited taste of
+            the AI. Subscribe now for full AI and you won&apos;t be charged until the trial ends.
           </p>
         )}
         {plan.tier === "free" && (

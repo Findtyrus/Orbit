@@ -18,7 +18,7 @@ function rememberTimezone() {
   if (tz && !document.cookie.includes(`tz=${tz}`)) document.cookie = `tz=${tz}; path=/; max-age=31536000; samesite=lax`;
 }
 
-const HIDDEN = ["/login", "/signup", "/welcome", "/onboarding", "/privacy", "/terms"];
+const HIDDEN = ["/login", "/signup", "/forgot", "/reset", "/welcome", "/onboarding", "/privacy", "/terms"];
 
 export function TabBar() {
   const path = usePathname();

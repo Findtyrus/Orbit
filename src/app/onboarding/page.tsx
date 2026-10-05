@@ -56,7 +56,7 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
               {count ? "Continue" : "Skip for now"}
             </Link>
           </div>
-          {!count && <p className="text-center text-xs text-muted">You can import anytime from the Me tab once LinkedIn emails your archive.</p>}
+          {!count && <p className="text-center text-xs text-muted">You can import anytime from Account once LinkedIn emails your archive. Until then, add people by hand on the People tab.</p>}
         </section>
       )}
 

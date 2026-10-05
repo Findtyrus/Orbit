@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { getUser } from "@/lib/supabase/server";
 import { buildBrain } from "@/lib/brain";
@@ -64,4 +65,33 @@ export async function saveNotes(id: string, form: FormData) {
   const { supabase } = await getUser();
   await supabase.from("contacts").update({ notes: String(form.get("notes") ?? "") }).eq("id", id);
   await done(id);
+}
+
+/** Add someone by hand (before or without a LinkedIn import). */
+export async function addPerson(_prev: string | null, form: FormData): Promise<string | null> {
+  const { supabase, user } = await getUser();
+  if (!user) return "Not signed in.";
+  const s = (k: string) => String(form.get(k) ?? "").trim();
+  const name = s("name");
+  if (!name) return "Add their name.";
+  const [first, ...rest] = name.split(/\s+/);
+  const linkedin = s("linkedin");
+  const slug = linkedin.match(/linkedin\.com\/in\/([^/?#]+)/i)?.[1]?.toLowerCase() ?? null;
+  const cadence = Number(s("cadence")) || null;
+
+  const { data, error } = await supabase.from("contacts").insert({
+    first_name: first,
+    last_name: rest.join(" "),
+    company: s("company") || null,
+    title: s("title") || null,
+    email: s("email").toLowerCase() || null,
+    linkedin_url: slug ? `https://www.linkedin.com/in/${slug}` : null,
+    linkedin_slug: slug,
+    notes: s("notes") || null,
+    cadence_days: cadence,
+    source: "manual",
+  }).select("id").single();
+  if (error) return error.code === "23505" ? "That LinkedIn profile is already in Orbit." : error.message;
+  revalidatePath("/", "layout");
+  redirect(`/contacts/${data.id}`);
 }

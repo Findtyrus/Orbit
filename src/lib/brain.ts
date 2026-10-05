@@ -106,14 +106,14 @@ export async function buildBrain(db: SupabaseClient, userId: string, contactId: 
 }
 
 /** Contacts with history whose memory is missing or older than their newest interaction, best relationships first. */
-export async function staleBrainIds(db: SupabaseClient, userId: string, limit: number) {
+export async function staleBrainIds(db: SupabaseClient, userId: string, limit: number, onlyTop?: number) {
   const [{ data: people }, { data: syn }] = await Promise.all([
     // Only real relationships get memories automatically: they replied, you met or called, or you starred them.
     // Everyone else gets one on demand from their page — this keeps a first import affordable.
     db.from("contact_status").select("id, last_interaction_at, score")
       .eq("user_id", userId).gt("interaction_count", 0)
       .or("last_inbound_at.not.is.null,meeting_count.gt.0,starred.eq.true")
-      .order("score", { ascending: false }).limit(2000),
+      .order("score", { ascending: false }).limit(onlyTop ?? 2000),
     db.from("synopses").select("contact_id, interactions_seen").eq("user_id", userId).limit(5000),
   ]);
   const seen = new Map((syn ?? []).map((s) => [s.contact_id, s.interactions_seen]));

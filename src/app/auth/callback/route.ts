@@ -13,5 +13,8 @@ export async function GET(request: NextRequest) {
   }
   // Supabase confirms the email before redirecting here. If the link opened in a different browser than the one
   // used to sign up (common with home-screen apps), the session can't be created here, but the account is confirmed.
+  if (safeNext === "/reset") {
+    return NextResponse.redirect(new URL("/login?error=Open+the+reset+link+on+the+same+device+you+requested+it+from,+or+request+a+new+one.", request.url));
+  }
   return NextResponse.redirect(new URL("/login?notice=Your+email+is+confirmed.+Sign+in+to+continue.", request.url));
 }

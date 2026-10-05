@@ -16,8 +16,12 @@ export const PLAN_LIMITS = {
     drafts: num(process.env.DAILY_DRAFT_LIMIT, 10),
   },
   free: { memories: 10, asks: 3, preps: 2, drafts: 3 },
+  // Free trial: a real taste of the AI at about $1 per active trial user.
+  trial: { memories: 25, asks: 3, preps: 2, drafts: 3 },
 };
 export const FREE_FIRM_LIMIT = 3;
+/** Trial accounts get automatic memories for only their strongest relationships. */
+export const TRIAL_MEMORY_PEOPLE = 25;
 export type UsageKind = keyof typeof PLAN_LIMITS.pro;
 
 export type Plan = {
