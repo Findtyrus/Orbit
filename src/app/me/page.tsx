@@ -10,6 +10,9 @@ import { signOut } from "../login/actions";
 import { LinkedInImport } from "./LinkedInImport";
 import { GoogleSync } from "./GoogleSync";
 import { DeleteAccount } from "./DeleteAccount";
+import { ThemePicker } from "@/components/ThemePicker";
+import { replayTour } from "../profile-actions";
+import { cookies } from "next/headers";
 
 export default async function MePage({ searchParams }: PageProps<"/me">) {
   const sp = await searchParams;
@@ -25,6 +28,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
     try { await refreshFromStripe(user!.id); } catch (e) { console.error("stripe refresh failed", e); }
   }
   const plan = await getPlan(supabase, user!);
+  const themePref = (await cookies()).get("theme")?.value;
   const limits = PLAN_LIMITS[plan.tier];
   const googleConfigured = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.SUPABASE_SECRET_KEY);
 
@@ -80,6 +84,14 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
         configured={googleConfigured} gmail={gmailAllowed(user?.email)} />
 
       <LinkedInImport />
+
+      <section className="space-y-3 rounded-lg border border-line bg-card p-4">
+        <h2 className="font-semibold">Appearance</h2>
+        <ThemePicker initial={themePref === "light" || themePref === "dark" ? themePref : "system"} />
+        <form action={replayTour}>
+          <button className="text-sm font-medium text-ink underline decoration-line-strong underline-offset-2">Replay the walkthrough</button>
+        </form>
+      </section>
 
       <section className="space-y-3 rounded-lg border border-line bg-card p-4 text-sm">
         <h2 className="font-semibold">Account</h2>

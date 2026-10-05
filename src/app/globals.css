@@ -21,8 +21,28 @@
   --bad-soft: #faf0ef;
 }
 
+/* Dark theme: chosen explicitly, or following the system when the user picked "System". */
+:root[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --card: #141414;
+    --ink: #ededed;
+    --muted: #a1a1a1;
+    --faint: #6f6f6f;
+    --line: #242424;
+    --line-strong: #333333;
+    --accent: #ededed;
+    --accent-ink: #0a0a0a;
+    --accent-soft: #1b1b1b;
+    --good: #86c3a1;
+    --good-soft: #142019;
+    --warn: #e59a94;
+    --warn-soft: #241413;
+    --bad: #e59a94;
+    --bad-soft: #241413;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0a0a0a;
     --card: #141414;
     --ink: #ededed;

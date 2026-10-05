@@ -9,6 +9,7 @@ import { StrengthBadge } from "@/components/StrengthBadge";
 import { LoopCheck, MessageButton } from "@/components/client";
 import { fullName, isOlderThan, isoDate, relDays, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
 import { snooze } from "./contacts/actions";
+import { Tour } from "@/components/Tour";
 
 type Meeting = { id: string; title: string; start_at: string; end_at: string; contact_ids: string[]; attendees: { name: string | null; email: string }[]; debriefed: boolean };
 
@@ -100,7 +101,8 @@ export default async function TodayPage() {
       .gte("connected_on", twoWeeksAgo).eq("interaction_count", 0)
       .order("connected_on", { ascending: false }).limit(8),
     supabase.from("contacts").select("id", { count: "exact", head: true }),
-    supabase.from("profiles").select("name, onboarded_at").maybeSingle(),
+    // select("*") so a not-yet-applied column (e.g. tour_done_at) can't break this query.
+    supabase.from("profiles").select("*").maybeSingle(),
   ]);
   const [{ data: meetingRows }, { data: google }, { data: deadlineRows }] = await Promise.all([
     supabase.from("meetings").select("id, title, start_at, end_at, contact_ids, attendees, debriefed")
@@ -146,6 +148,7 @@ export default async function TodayPage() {
 
   return (
     <div className="space-y-8">
+      {!me.data?.tour_done_at && <Tour />}
       <header>
         <p className="text-sm text-muted">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
         <h1 className="text-3xl font-semibold tracking-tight">{greeting}{firstName ? `, ${firstName}` : ""}</h1>

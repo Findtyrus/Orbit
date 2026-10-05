@@ -95,3 +95,6 @@ export const isoDate = (offsetDays = 0) => new Date(Date.now() + offsetDays * 86
 
 /** True when `iso` is missing or older than `ms`. */
 export const isOlderThan = (iso: string | null | undefined, ms: number) => !iso || Date.now() - Date.parse(iso) > ms;
+
+/** Full ISO timestamp `offsetDays` from now (fractional days allowed). */
+export const isoAt = (offsetDays = 0) => new Date(Date.now() + offsetDays * 86_400_000).toISOString();

@@ -38,3 +38,18 @@ export async function finishOnboarding() {
   after(() => buildBrainsFor(user.id));
   redirect("/?welcome=1");
 }
+
+/** Finish or skip the walkthrough; either way it won't show again. */
+export async function finishTour() {
+  const { supabase, user } = await getUser();
+  if (!user) return;
+  await supabase.from("profiles").update({ tour_done_at: new Date().toISOString() }).eq("user_id", user.id);
+  revalidatePath("/");
+}
+
+export async function replayTour() {
+  const { supabase, user } = await getUser();
+  if (!user) redirect("/login");
+  await supabase.from("profiles").update({ tour_done_at: null }).eq("user_id", user.id);
+  redirect("/");
+}
