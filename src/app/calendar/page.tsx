@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { userTimeZone } from "@/lib/tz";
 import { getUser } from "@/lib/supabase/server";
 import { fullName, isoAt, isoDate, type Commitment, type ContactStatus } from "@/lib/types";
 
@@ -22,7 +22,7 @@ const KIND_STYLE: Record<Item["kind"], string> = {
 };
 
 export default async function CalendarPage() {
-  const tz = (await cookies()).get("tz")?.value || "America/Chicago";
+  const tz = await userTimeZone();
   const dayOf = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: tz });
   const today = dayOf(isoAt());
   const end = isoDate(DAYS_AHEAD);
@@ -50,7 +50,10 @@ export default async function CalendarPage() {
       detail: guests.map((g) => g.name ?? g.email.split("@")[0]).join(", "),
     });
   }
+  const promisedOn = new Set(((loops.data ?? []) as Commitment[]).map((l) => `${l.contact_id}:${l.due_on}`));
   for (const s of synopses.data ?? []) {
+    // A promise to the same person that day already covers the follow-up.
+    if (promisedOn.has(`${s.contact_id}:${s.follow_up_on}`)) continue;
     items.push({ day: s.follow_up_on, kind: "Follow-up", title: `Follow up with ${name(s.contact_id)}`, detail: s.next_step ?? undefined, href: `/contacts/${s.contact_id}` });
   }
   const overdueLoops = ((loops.data ?? []) as Commitment[]).filter((l) => l.due_on! < today);
@@ -100,7 +103,7 @@ export default async function CalendarPage() {
           {overdueLoops.length} promise{overdueLoops.length === 1 ? " is" : "s are"} past due. See Today →
         </Link>
       )}
-      {!google.data && (
+      {!google.data && !(meetings.data ?? []).length && (
         <Link href="/me" className="block rounded-lg border border-line bg-card p-4 text-sm">
           <span className="font-medium">Connect Google Calendar</span>
           <span className="text-muted"> to see your coffee chats here with a prep brief for each.</span>

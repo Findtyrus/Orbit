@@ -10,6 +10,7 @@ import { LoopCheck, MessageButton } from "@/components/client";
 import { fullName, isOlderThan, isoDate, relDays, shortDate, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
 import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
+import { inZone, userTimeZone } from "@/lib/tz";
 import { OutreachQueue, type QueueItem } from "@/components/OutreachQueue";
 
 type Meeting = { id: string; title: string; start_at: string; end_at: string; contact_ids: string[]; attendees: { name: string | null; email: string }[]; debriefed: boolean };
@@ -90,6 +91,8 @@ function PersonCard({ p }: { p: TodayPick }) {
 export default async function TodayPage() {
   const { supabase, user } = await getUser();
   const today = isoDate();
+  const z = inZone(await userTimeZone());
+  const now = new Date();
   const twoWeeksAgo = isoDate(-14);
 
   const [people, syn, loops, fresh, counts, me] = await Promise.all([
@@ -158,7 +161,7 @@ export default async function TodayPage() {
   const debriefs = meetingsAll.filter((m) => m.end_at < nowIso && !m.debriefed && m.contact_ids.length);
   const relationships = list.filter((c) => ["Warm", "Strong"].includes(c.strength)).length;
 
-  const hour = new Date().getHours();
+  const hour = z.hour(now);
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = me.data?.name?.split(" ")[0];
 
@@ -166,7 +169,7 @@ export default async function TodayPage() {
     <div className="space-y-8">
       {!me.data?.tour_done_at && <Tour />}
       <header>
-        <p className="text-sm text-muted">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
+        <p className="text-sm text-muted">{z.date(now, { weekday: "long", month: "long", day: "numeric" })}</p>
         <h1 className="text-3xl font-semibold tracking-tight">{greeting}{firstName ? `, ${firstName}` : ""}</h1>
         <div className="mt-3 grid grid-cols-3 gap-2 text-center">
           {[
@@ -239,18 +242,18 @@ export default async function TodayPage() {
               <Link key={m.id} href={m.contact_ids[0] ? `/contacts/${m.contact_ids[0]}#log` : `/meetings/${m.id}`}
                 className="block rounded-lg border border-accent/25 bg-accent-soft p-4">
                 <div className="text-sm font-semibold text-accent">How did it go?</div>
-                <div className="text-sm">{m.title} · {new Date(m.start_at).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</div>
+                <div className="text-sm">{m.title} · {z.date(m.start_at, { weekday: "short", month: "short", day: "numeric" })}</div>
                 <div className="mt-1 text-xs text-muted">Capture takeaways and follow-ups while they&apos;re fresh →</div>
               </Link>
             ))}
             {upcoming.map((m) => {
               const start = new Date(m.start_at);
-              const isToday = m.start_at.slice(0, 10) === today;
+              const isToday = z.day(m.start_at) === z.day(now);
               return (
                 <Link key={m.id} href={`/meetings/${m.id}`} className="flex items-center gap-3 rounded-lg border border-line bg-card p-4">
                   <div className="w-14 shrink-0 text-center">
-                    <div className="text-xs text-muted">{isToday ? "Today" : start.toLocaleDateString("en-US", { weekday: "short" })}</div>
-                    <div className="text-sm font-semibold">{start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</div>
+                    <div className="text-xs text-muted">{isToday ? "Today" : z.date(start, { weekday: "short" })}</div>
+                    <div className="text-sm font-semibold">{z.time(start)}</div>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-medium">{m.title}</div>

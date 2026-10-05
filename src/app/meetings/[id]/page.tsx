@@ -5,10 +5,12 @@ import { ContactRow } from "@/components/ContactRow";
 import { PrepButton } from "@/components/client";
 import type { MeetingPrep } from "@/lib/ai/service";
 import type { ContactStatus } from "@/lib/types";
+import { inZone, userTimeZone } from "@/lib/tz";
 
 export default async function MeetingPage({ params }: PageProps<"/meetings/[id]">) {
   const { id } = await params;
   const { supabase } = await getUser();
+  const z = inZone(await userTimeZone());
   const { data: m } = await supabase.from("meetings").select("*").eq("id", id).maybeSingle();
   if (!m) notFound();
   const { data: people } = await supabase.from("contact_status").select("*").in("id", m.contact_ids ?? []);
@@ -21,8 +23,8 @@ export default async function MeetingPage({ params }: PageProps<"/meetings/[id]"
     <div className="space-y-6">
       <header className="pt-2">
         <p className="text-sm text-muted">
-          {start.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} ·{" "}
-          {start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+          {z.date(start, { weekday: "long", month: "long", day: "numeric" })} ·{" "}
+          {z.time(start)}
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">{m.title}</h1>
         {m.location && <p className="mt-1 truncate text-sm text-muted">{m.location}</p>}
