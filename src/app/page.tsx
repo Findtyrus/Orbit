@@ -251,7 +251,7 @@ export default async function TodayPage() {
               const isToday = z.day(m.start_at) === z.day(now);
               return (
                 <Link key={m.id} href={`/meetings/${m.id}`} className="flex items-center gap-3 rounded-lg border border-line bg-card p-4">
-                  <div className="w-14 shrink-0 text-center">
+                  <div className="w-[4.5rem] shrink-0 whitespace-nowrap text-center">
                     <div className="text-xs text-muted">{isToday ? "Today" : z.date(start, { weekday: "short" })}</div>
                     <div className="text-sm font-semibold">{z.time(start)}</div>
                   </div>
