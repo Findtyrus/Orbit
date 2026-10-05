@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getUser } from "@/lib/supabase/server";
 import { FIRM_CATEGORIES, FIRM_STAGES, worksAt, type Firm } from "@/lib/firms";
-import type { ContactStatus } from "@/lib/types";
+import { shortDate, type ContactStatus } from "@/lib/types";
 import { addFirm, seedFirms } from "../firm-actions";
 import { StageBadge } from "@/components/StageBadge";
 
@@ -70,11 +70,11 @@ export default async function FirmsPage() {
               </div>
               <StageBadge stage={f.stage} />
             </div>
-            <div className="mt-2 flex gap-4 text-sm">
+            <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 whitespace-nowrap text-sm">
               <span><b>{total}</b> <span className="text-muted">people</span></span>
               <span><b>{talked}</b> <span className="text-muted">talked to</span></span>
               <span><b>{warm}</b> <span className="text-muted">warm</span></span>
-              {f.deadline && <span className="ml-auto text-xs text-warn">Due {f.deadline}</span>}
+              {f.deadline && <span className="ml-auto text-xs font-medium text-warn">Due {shortDate(f.deadline)}</span>}
             </div>
           </Link>
         ))}

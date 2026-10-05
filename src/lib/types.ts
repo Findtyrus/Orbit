@@ -98,3 +98,7 @@ export const isOlderThan = (iso: string | null | undefined, ms: number) => !iso 
 
 /** Full ISO timestamp `offsetDays` from now (fractional days allowed). */
 export const isoAt = (offsetDays = 0) => new Date(Date.now() + offsetDays * 86_400_000).toISOString();
+
+/** "2026-10-14" -> "Oct 14" (dates are calendar days, so format in UTC to avoid timezone shifts). */
+export const shortDate = (ymd: string) =>
+  new Date(`${ymd}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });

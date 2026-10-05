@@ -5,7 +5,7 @@ import { StrengthBadge } from "@/components/StrengthBadge";
 import { CopyText, LoopCheck, MessageButton, RefreshBrainButton } from "@/components/client";
 import { gmailComposeHref, mailtoHref } from "@/lib/email-draft";
 import {
-  CADENCES, fullName, relDays,
+  CADENCES, fullName, relDays, shortDate,
   type Commitment, type ContactStatus, type Facts, type Interaction, type Synopsis,
 } from "@/lib/types";
 import { logInteraction, saveNotes, setCadence, snooze, toggleStar } from "../actions";
@@ -69,7 +69,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
         )}
         <p className="mt-2 text-xs text-muted">
           Last contact {relDays(c.last_interaction_at)}
-          {c.connected_on && ` · connected ${c.connected_on}`}
+          {c.connected_on && ` · connected ${shortDate(c.connected_on)}`}
         </p>
         <div className="mt-4 flex gap-2">
           {c.linkedin_url && (
@@ -117,7 +117,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
                 <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">Recommended next step</div>
                 <p className="mt-1 font-medium">{synopsis.next_step}</p>
                 {synopsis.why_now && <p className="mt-1 text-muted">{synopsis.why_now}</p>}
-                {synopsis.follow_up_on && <p className="mt-1 text-xs text-muted">Follow up around {synopsis.follow_up_on}</p>}
+                {synopsis.follow_up_on && <p className="mt-1 text-xs text-muted">Follow up around {shortDate(synopsis.follow_up_on)}</p>}
               </div>
             )}
             {FACT_LABELS.map(([key, label]) => {
@@ -222,7 +222,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
         </form>
         {c.next_due && (
           <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-muted">Next check-in: <b className="text-ink">{c.next_due}</b></span>
+            <span className="text-muted">Next check-in: <b className="text-ink">{shortDate(c.next_due)}</b></span>
             <form action={snooze.bind(null, c.id, 7)}><button className="text-accent">Snooze 1w</button></form>
           </div>
         )}
@@ -242,7 +242,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
         <ol className="space-y-2">
           {synopsis?.follow_up_on && synopsis.follow_up_on > new Date().toISOString().slice(0, 10) && (
             <li className="rounded-lg border border-dashed border-line p-3 text-sm text-muted">
-              <div className="flex justify-between text-xs"><span>Upcoming</span><span>{synopsis.follow_up_on}</span></div>
+              <div className="flex justify-between text-xs"><span>Upcoming</span><span>{shortDate(synopsis.follow_up_on)}</span></div>
               <div className="mt-1">Suggested follow-up</div>
             </li>
           )}
@@ -261,7 +261,7 @@ export default async function ContactPage({ params }: PageProps<"/contacts/[id]"
           ))}
           {c.connected_on && (
             <li className="rounded-lg border border-line bg-card p-3 text-sm">
-              <div className="flex justify-between text-xs text-muted"><span>LinkedIn</span><span>{c.connected_on}</span></div>
+              <div className="flex justify-between text-xs text-muted"><span>LinkedIn</span><span>{shortDate(c.connected_on)}</span></div>
               <div className="mt-1">Connected on LinkedIn</div>
             </li>
           )}

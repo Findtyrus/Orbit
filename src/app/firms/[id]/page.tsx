@@ -4,7 +4,7 @@ import { getUser } from "@/lib/supabase/server";
 import { ContactRow } from "@/components/ContactRow";
 import { StageBadge } from "@/components/StageBadge";
 import { approachability, FIRM_CATEGORIES, FIRM_STAGES, worksAt, type Firm } from "@/lib/firms";
-import { fullName, type ContactStatus } from "@/lib/types";
+import { fullName, shortDate, type ContactStatus } from "@/lib/types";
 import { deleteFirm, updateFirm } from "../../firm-actions";
 
 const field = "w-full rounded-md border border-line bg-card px-3 py-2 text-sm outline-none placeholder:text-faint focus:border-accent";
@@ -46,7 +46,7 @@ export default async function FirmPage({ params }: PageProps<"/firms/[id]">) {
         </div>
         <p className="text-sm text-muted">
           {[f.category, f.role].filter(Boolean).join(" · ") || "Add the role you're targeting below"}
-          {f.deadline && <span className="text-warn"> · due {f.deadline}</span>}
+          {f.deadline && <span className="text-warn"> · due {shortDate(f.deadline)}</span>}
         </p>
       </header>
 

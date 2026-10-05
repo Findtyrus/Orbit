@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buildBrains, refreshBrain, setLoopStatus, type BatchResult } from "@/app/brain-actions";
 import { prepMeeting } from "@/app/google-actions";
+import { shortDate } from "@/lib/types";
 
 /** Copies the drafted message, then opens LinkedIn (or email) so you paste, edit and send it yourself. */
 export function MessageButton({ message, linkedinUrl, email, className = "" }: {
@@ -66,7 +67,7 @@ export function LoopCheck({ id, text, due, owner, name }: { id: string; text: st
         <div className="text-xs text-muted">
           {name && <span>{name} · </span>}
           {owner === "them" ? "they owe this" : "you owe this"}
-          {due && <span className={overdue ? "text-warn" : ""}> · due {due}</span>}
+          {due && <span className={overdue ? "text-warn" : ""}> · due {shortDate(due)}</span>}
         </div>
       </div>
       <button type="button" aria-label="Dismiss" disabled={pending} className="text-xs text-muted"

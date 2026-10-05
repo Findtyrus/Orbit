@@ -7,7 +7,7 @@ import { getPlan } from "@/lib/billing";
 import { Avatar, ContactRow } from "@/components/ContactRow";
 import { StrengthBadge } from "@/components/StrengthBadge";
 import { LoopCheck, MessageButton } from "@/components/client";
-import { fullName, isOlderThan, isoDate, relDays, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
+import { fullName, isOlderThan, isoDate, relDays, shortDate, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
 import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
 import { OutreachQueue, type QueueItem } from "@/components/OutreachQueue";
@@ -224,7 +224,7 @@ export default async function TodayPage() {
                   <div className="font-medium">{f.name}</div>
                   <div className="text-xs text-muted">{f.role ?? "Application"} · {f.stage}</div>
                 </div>
-                <div className="text-sm font-semibold text-warn">{f.deadline === today ? "Today" : f.deadline}</div>
+                <div className="text-sm font-semibold text-warn">{f.deadline === today ? "Today" : shortDate(f.deadline)}</div>
               </Link>
             ))}
           </div>
