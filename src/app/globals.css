@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* Orbit — quiet, editorial, finance-grade. One accent (navy); everything else is ink on paper. */
+:root {
+  /* Orbit: black and white, one quiet green for good news, one deep red for warnings. */
+  --bg: #fafaf9;
+  --card: #ffffff;
+  --ink: #0c0c0c;
+  --muted: #545454;
+  --faint: #8c8c8c;
+  --line: #e8e7e4;
+  --line-strong: #d4d2ce;
+  --accent: #0c0c0c;        /* primary actions are black */
+  --accent-ink: #ffffff;
+  --accent-soft: #f3f3f1;   /* neutral highlight surface */
+  --good: #1f5c3f;          /* deep green */
+  --good-soft: #edf4ef;
+  --warn: #8f1d1d;          /* deep red: overdue, errors, deadlines */
+  --warn-soft: #faf0ef;
+  --bad: #8f1d1d;
+  --bad-soft: #faf0ef;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a0a0a;
+    --card: #141414;
+    --ink: #ededed;
+    --muted: #a1a1a1;
+    --faint: #6f6f6f;
+    --line: #242424;
+    --line-strong: #333333;
+    --accent: #ededed;
+    --accent-ink: #0a0a0a;
+    --accent-soft: #1b1b1b;
+    --good: #86c3a1;
+    --good-soft: #142019;
+    --warn: #e59a94;
+    --warn-soft: #241413;
+    --bad: #e59a94;
+    --bad-soft: #241413;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  font-feature-settings: "tnum" 1; /* aligned numbers everywhere */
+}
+
+h1 { font-weight: 600; letter-spacing: -0.025em; }
+
+::selection { background: var(--accent-soft); }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

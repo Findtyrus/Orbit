@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Orbit mark: a confident ring with a planet riding it; the planet's halo cuts a gap in the ring. -->
+  <circle cx="50" cy="50" r="31" stroke="#0c0c0c" stroke-width="8"/>
+  <circle cx="71.92" cy="28.08" r="13" fill="#ffffff"/>
+  <circle cx="71.92" cy="28.08" r="8.5" fill="#0c0c0c"/>
+</svg>
