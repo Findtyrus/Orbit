@@ -15,8 +15,10 @@ type QueuePick = { c: ContactStatus; kind: OutreachInput["kind"]; reason: string
  * Build today's outreach queue: follow-ups first (they're time-sensitive), then a check-in, then cold intros
  * at target firms. Drafts only — the user sends every message themselves. Safe to call repeatedly.
  */
-export async function buildQueue(db: SupabaseClient, userId: string): Promise<number> {
-  if (!process.env.ANTHROPIC_API_KEY) return 0;
+export type QueueResult = { made: number; error?: string };
+
+export async function buildQueue(db: SupabaseClient, userId: string): Promise<QueueResult> {
+  if (!process.env.ANTHROPIC_API_KEY) return { made: 0, error: "AI isn't configured." };
   const today = isoDate();
   const [{ data: existing }, { data: people }, { data: firms }] = await Promise.all([
     db.from("outreach_queue").select("contact_id, for_date").eq("user_id", userId).gte("for_date", isoDate(-COOLDOWN_DAYS)),
@@ -25,7 +27,7 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<nu
   ]);
   const queuedToday = (existing ?? []).filter((e) => e.for_date === today).length;
   const room = DAILY_TARGET - queuedToday;
-  if (room <= 0) return 0;
+  if (room <= 0) return { made: 0 };
 
   const recentlyQueued = new Set((existing ?? []).map((e) => e.contact_id));
   const reachable = ((people ?? []) as ContactStatus[]).filter((c) =>
@@ -61,12 +63,12 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<nu
       if (ps[round]) add({ c: ps[round], kind: "intro", reason: `At ${f.name}, a target firm. You've never messaged`, firm: f.name });
     }
   }
-  if (!picks.length) return 0;
+  if (!picks.length) return { made: 0 };
 
   // Spend the allowance up front; trim the queue if the user is near their daily cap.
   let n = picks.length;
   while (n > 0 && !(await spendAI(userId, "drafts", n))) n--;
-  if (!n) return 0;
+  if (!n) return { made: 0, error: "You've used today's outreach drafts. They reset at midnight UTC." };
 
   const me = await loadProfile(db, userId);
   const { data: syn } = await db.from("synopses").select("contact_id, summary").eq("user_id", userId)
@@ -74,6 +76,7 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<nu
   const memoryOf = new Map((syn ?? []).map((s) => [s.contact_id, s.summary]));
   const ai = await getAI();
 
+  let lastError: string | undefined;
   const rows = await Promise.all(picks.slice(0, n).map(async (p) => {
     const { data: hist } = await db.from("interactions").select("kind, direction, occurred_at, body")
       .eq("contact_id", p.c.id).eq("user_id", userId).order("occurred_at", { ascending: false }).limit(6);
@@ -92,10 +95,16 @@ export async function buildQueue(db: SupabaseClient, userId: string): Promise<nu
       };
     } catch (e) {
       console.error("outreach draft failed", e);
+      lastError = e instanceof Error ? e.message : String(e);
       return null;
     }
   }));
   const ok = rows.filter((r) => r !== null);
   if (ok.length) await db.from("outreach_queue").upsert(ok, { onConflict: "user_id,contact_id,for_date", ignoreDuplicates: true });
-  return ok.length;
+  if (!ok.length && lastError) {
+    return { made: 0, error: /credit balance/i.test(lastError)
+      ? "Orbit's AI is temporarily unavailable (the AI account is out of credits)."
+      : "Couldn't write drafts right now. Try again in a minute." };
+  }
+  return { made: ok.length };
 }

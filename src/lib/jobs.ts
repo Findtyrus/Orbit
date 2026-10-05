@@ -47,7 +47,7 @@ export async function runScheduledJobs(budgetMs: number) {
     if (left < 90_000) break;
     const memories = await buildBrainsFor(p.user_id, Math.min(left, 120_000));
     // Fresh drafts waiting each morning (after memories, so drafts can use them).
-    const drafts = await buildQueue(db, p.user_id).catch((e) => { console.error("queue failed", e); return 0; });
+    const drafts = await buildQueue(db, p.user_id).catch((e) => ({ made: 0, error: String(e) }));
     results.push({ user: p.user_id, memories, drafts });
   }
   return results;

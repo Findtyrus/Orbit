@@ -8,8 +8,9 @@ export async function prepareOutreach(): Promise<string | null> {
   const { supabase, user } = await getUser();
   if (!user) return "Not signed in.";
   if (!process.env.ANTHROPIC_API_KEY) return "AI isn't configured.";
-  const made = await buildQueue(supabase, user.id);
+  const { made, error } = await buildQueue(supabase, user.id);
   revalidatePath("/");
+  if (error) return error;
   return made ? null : "Nothing to queue right now. Add target firms on the Firms tab, or check back after more conversations.";
 }
 
