@@ -19,7 +19,7 @@ export function ThemePicker({ initial }: { initial: Pref }) {
   }
   return (
     <div className="flex gap-1 rounded-lg border border-line bg-bg p-1">
-      {(["system", "light", "dark"] as const).map((p) => (
+      {(["light", "dark", "system"] as const).map((p) => (
         <button key={p} type="button" onClick={() => choose(p)}
           className={`flex-1 rounded-md py-1.5 text-sm font-medium capitalize ${pref === p ? "bg-card text-ink shadow-sm" : "text-muted"}`}>
           {p}

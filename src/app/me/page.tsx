@@ -93,7 +93,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
 
       <section className="space-y-3 rounded-lg border border-line bg-card p-4">
         <h2 className="font-semibold">Appearance</h2>
-        <ThemePicker initial={themePref === "light" || themePref === "dark" ? themePref : "system"} />
+        <ThemePicker initial={themePref === "dark" || themePref === "system" ? themePref : "light"} />
         <form action={replayTour}>
           <button className="text-sm font-medium text-ink underline decoration-line-strong underline-offset-2">Replay the walkthrough</button>
         </form>
@@ -102,6 +102,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
       <section className="space-y-3 rounded-lg border border-line bg-card p-4 text-sm">
         <h2 className="font-semibold">Account</h2>
         <p className="text-muted">Signed in as {user?.email}</p>
+        <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? ""}?subject=Orbit%20feedback`} className="block font-medium text-ink">Send feedback</a>
         <a href="/api/account/export" className="block font-medium text-accent">Download my data (JSON)</a>
         <div className="flex gap-4 text-muted">
           <Link href="/privacy">Privacy</Link>

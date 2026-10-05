@@ -23,9 +23,9 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  // "light" | "dark" pins the theme; anything else follows the phone's setting.
+  // Light by default. "dark" pins dark mode; "system" follows the phone's setting.
   const pref = (await cookies()).get("theme")?.value;
-  const theme = pref === "light" || pref === "dark" ? pref : undefined;
+  const theme = pref === "dark" ? "dark" : pref === "system" ? undefined : "light";
   return (
     <html lang="en" data-theme={theme} className={`${instrument.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
