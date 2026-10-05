@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
-import { signIn, signInWithGoogle, signUp, type SignUpState } from "@/app/login/actions";
+import { useActionState, useState, useTransition } from "react";
+import { resendConfirmation, signIn, signInWithGoogle, signUp, verifySignupCode, type SignUpState } from "@/app/login/actions";
 
 const input = "w-full rounded-md border border-line bg-card px-4 py-3 outline-none placeholder:text-faint focus:border-accent";
 
@@ -36,16 +36,42 @@ export function LoginForm({ initialError }: { initialError?: string }) {
   );
 }
 
+function CheckEmail({ email }: { email: string }) {
+  const [error, verify, verifying] = useActionState(verifySignupCode.bind(null, email), null);
+  const [note, setNote] = useState<string | null>(null);
+  const [resending, start] = useTransition();
+  return (
+    <div className="space-y-4 rounded-lg border border-line bg-card p-5">
+      <div>
+        <div className="font-semibold">Check your email</div>
+        <p className="mt-1 text-sm text-muted">
+          We sent a confirmation email to <b className="text-ink">{email}</b>. Tap the link in it, or enter the
+          6-digit code below. If you don&apos;t see it within a minute, check spam or junk.
+        </p>
+      </div>
+      <form action={verify} className="flex gap-2">
+        <input name="code" inputMode="numeric" autoComplete="one-time-code" maxLength={8} placeholder="6-digit code"
+          className="min-w-0 flex-1 rounded-md border border-line bg-card px-3 py-2.5 text-center text-lg tracking-[0.3em] outline-none placeholder:text-sm placeholder:tracking-normal placeholder:text-faint focus:border-ink" />
+        <button disabled={verifying} className="rounded-md bg-accent px-4 text-sm font-medium text-accent-ink disabled:opacity-60">
+          {verifying ? "Checking" : "Verify"}
+        </button>
+      </form>
+      {error && <p className="text-sm text-bad">{error}</p>}
+      <div className="flex items-center justify-between text-sm">
+        <button type="button" disabled={resending} onClick={() => start(async () => setNote(await resendConfirmation(email)))}
+          className="font-medium underline decoration-line-strong underline-offset-2 disabled:opacity-60">
+          {resending ? "Sending" : "Resend email"}
+        </button>
+        <Link href="/login" className="text-muted">Already confirmed? Sign in</Link>
+      </div>
+      {note && <p className="text-xs text-muted">{note}</p>}
+    </div>
+  );
+}
+
 export function SignUpForm() {
   const [state, action, pending] = useActionState<SignUpState, FormData>(signUp, null);
-  if (state?.sent) {
-    return (
-      <div className="rounded-lg border border-line bg-card p-5">
-        <div className="font-semibold">Check your email</div>
-        <p className="mt-1 text-sm text-muted">We sent a confirmation link to <b>{state.sent}</b>. Open it on this device to finish setting up.</p>
-      </div>
-    );
-  }
+  if (state?.sent) return <CheckEmail email={state.sent} />;
   return (
     <div className="space-y-3">
       <GoogleButton />

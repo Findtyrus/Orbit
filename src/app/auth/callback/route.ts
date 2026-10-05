@@ -11,5 +11,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(safeNext, request.url));
   }
-  return NextResponse.redirect(new URL("/login?error=That+link+is+invalid+or+expired", request.url));
+  // Supabase confirms the email before redirecting here. If the link opened in a different browser than the one
+  // used to sign up (common with home-screen apps), the session can't be created here, but the account is confirmed.
+  return NextResponse.redirect(new URL("/login?notice=Your+email+is+confirmed.+Sign+in+to+continue.", request.url));
 }

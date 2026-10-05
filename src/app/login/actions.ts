@@ -39,6 +39,26 @@ export async function signUp(_prev: SignUpState, form: FormData): Promise<SignUp
   return { sent: email };
 }
 
+/** Confirm a new account with the 6-digit code from the email (works even if the link opens in another browser). */
+export async function verifySignupCode(email: string, _prev: string | null, form: FormData): Promise<string | null> {
+  const token = String(form.get("code") ?? "").replace(/\D/g, "");
+  if (token.length < 6) return "Enter the 6-digit code from the email.";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+  if (error) return "That code didn't work. Check it, or tap Resend email for a new one.";
+  redirect("/onboarding");
+}
+
+export async function resendConfirmation(email: string): Promise<string> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${await origin()}/auth/callback?next=/onboarding` },
+  });
+  return error ? error.message : "Sent. It can take a minute; check spam or junk too.";
+}
+
 export async function signInWithGoogle() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
