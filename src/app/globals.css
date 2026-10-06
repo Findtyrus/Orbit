@@ -87,6 +87,7 @@ body {
   color: var(--ink);
   -webkit-tap-highlight-color: transparent;
   font-feature-settings: "tnum" 1; /* aligned numbers everywhere */
+  overflow-x: clip; /* full-bleed sections (the landing page) never cause sideways scroll */
 }
 
 h1 { font-weight: 600; letter-spacing: -0.025em; }
