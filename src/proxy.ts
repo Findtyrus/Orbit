@@ -6,7 +6,16 @@ const PUBLIC = ["/login", "/signup", "/forgot", "/auth", "/welcome", "/privacy",
 
 const REQUIRED = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"] as const;
 
+// Visitors on the old Vercel address move to the real domain. APIs (webhooks, cron, Google's callback) and auth
+// links stay put, since they're mid-flow and their cookies live on the old host.
+const OLD_HOST = "orbit-zeta-ashen.vercel.app";
+const DOMAIN = "buildyourorbit.com";
+
 export async function proxy(request: NextRequest) {
+  const { host, pathname, search } = request.nextUrl;
+  if (host === OLD_HOST && !pathname.startsWith("/api") && !pathname.startsWith("/auth")) {
+    return NextResponse.redirect(`https://${DOMAIN}${pathname}${search}`, 308);
+  }
   // A deploy without its settings should say so plainly instead of a bare 500.
   const missing = REQUIRED.filter((k) => !process.env[k]);
   if (missing.length) {

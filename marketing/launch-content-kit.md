@@ -3,7 +3,7 @@
 **Goal for the first two weeks:** 50 students signed up, 20 who import their LinkedIn, and 10 who use Orbit
 three or more days in a row. Sign-ups are vanity; students who come back are the signal.
 
-**Link:** https://orbit-zeta-ashen.vercel.app (swap in your own domain when you get one)
+**Link:** https://buildyourorbit.com
 
 **One-line pitch:** Orbit remembers every coffee chat and tells you who to follow up with, and what to say.
 
