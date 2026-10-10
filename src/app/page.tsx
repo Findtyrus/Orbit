@@ -10,6 +10,7 @@ import { LoopCheck, MessageButton } from "@/components/client";
 import { fullName, isOlderThan, isoDate, relDays, shortDate, type Commitment, type ContactStatus, type Synopsis } from "@/lib/types";
 import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
+import { trackVisit } from "@/lib/track";
 import { inZone, userTimeZone } from "@/lib/tz";
 import { OutreachQueue, type QueueItem } from "@/components/OutreachQueue";
 
@@ -140,6 +141,7 @@ export default async function TodayPage() {
     after(() => syncGoogle(user.id));
   }
 
+  if (user) await trackVisit(user);
   if (!me.data?.onboarded_at) redirect("/onboarding");
   const plan = user ? await getPlan(supabase, user) : null;
   const list = (people.data ?? []) as ContactStatus[];

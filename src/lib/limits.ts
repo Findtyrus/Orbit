@@ -1,6 +1,6 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
-import { planFrom, PLAN_LIMITS, type UsageKind } from "./billing";
+import { MONTHLY_AI_BUDGET, planFrom, PLAN_LIMITS, UNIT_COST, type UsageKind } from "./billing";
 
 export type { UsageKind };
 
@@ -49,12 +49,19 @@ export const limitMessage = (kind: UsageKind) =>
 export async function claimAI(userId: string, kind: UsageKind, n = 1): Promise<string | null> {
   const access = await aiAccess(userId);
   if (!access.active) return accessMessage(access);
-  const { data, error } = await createAdminClient().rpc("spend_ai", {
-    p_user: userId, p_kind: kind, p_cap: PLAN_LIMITS[access.tier ?? "pro"][kind], p_n: n,
+  const tier = access.tier ?? "pro";
+  const { data, error } = await createAdminClient().rpc("spend_ai2", {
+    p_user: userId, p_kind: kind, p_cap: PLAN_LIMITS[tier][kind], p_n: n,
+    p_cost: UNIT_COST[kind] * n, p_month_cap: MONTHLY_AI_BUDGET[tier],
   });
   if (error) throw new Error(`Usage check failed: ${error.message}`);
-  if (data === true) return null;
-  return access.tier === "trial"
+  if (data === "ok") return null;
+  if (data === "month") {
+    return tier === "trial"
+      ? "You've used the AI included in your free trial. Upgrade to Pro to keep going."
+      : "You've used this month's AI allowance. It resets on the 1st. Everything else in Orbit keeps working.";
+  }
+  return tier === "trial"
     ? `You've used today's trial ${LABEL[kind]}. Upgrade to Pro for more, or come back tomorrow.`
     : limitMessage(kind);
 }

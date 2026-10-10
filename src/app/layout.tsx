@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Instrument_Sans } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { TabBar } from "@/components/TabBar";
+import { Pixels } from "@/components/Pixels";
 
 const instrument = Instrument_Sans({ variable: "--font-instrument", subsets: ["latin"] });
 
@@ -39,6 +41,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full font-sans">
         <main className="mx-auto max-w-xl px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-28">{children}</main>
         <TabBar />
+        <Analytics />
+        <Pixels />
       </body>
     </html>
   );

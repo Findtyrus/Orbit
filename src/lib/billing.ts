@@ -19,6 +19,10 @@ export const PLAN_LIMITS = {
   // Free trial: a real taste of the AI at about $1 per active trial user.
   trial: { memories: 25, asks: 3, preps: 2, drafts: 3 },
 };
+/** Estimated AI cost per unit in USD (Sonnet 5.5 pricing), used to enforce the monthly budget below. */
+export const UNIT_COST: Record<keyof typeof PLAN_LIMITS.pro, number> = { memories: 0.0235, asks: 0.0168, preps: 0.03, drafts: 0.007 };
+/** Monthly AI budget per account in USD. Paying students stay well under the $6 price; trials get a smaller taste. */
+export const MONTHLY_AI_BUDGET = { pro: num(process.env.MONTHLY_AI_BUDGET, 3), trial: num(process.env.TRIAL_AI_BUDGET, 1.5) };
 export const FREE_FIRM_LIMIT = 3;
 /** Trial accounts get automatic memories for only their strongest relationships. */
 export const TRIAL_MEMORY_PEOPLE = 25;

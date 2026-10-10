@@ -11,7 +11,33 @@ const REQUIRED = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_
 const OLD_HOST = "orbit-zeta-ashen.vercel.app";
 const DOMAIN = "buildyourorbit.com";
 
+const clean = (v: string | null) => (v ?? "").toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 60);
+
+/** First-touch source: UTM tags, then ad click ids, then the referring site. Kept 90 days; the first touch wins. */
+function sourceCookie(request: NextRequest): string | null {
+  if (request.cookies.has("orbit_src")) return null;
+  const q = request.nextUrl.searchParams;
+  let source = clean(q.get("utm_source")) || clean(q.get("ref"));
+  if (!source && q.has("fbclid")) source = "meta";
+  if (!source && q.has("ttclid")) source = "tiktok";
+  if (!source) {
+    try {
+      const refHost = new URL(request.headers.get("referer") ?? "").hostname.replace(/^www\./, "");
+      if (refHost && !refHost.endsWith(DOMAIN) && refHost !== OLD_HOST && !/(^|\.)(google\.com|supabase\.co|stripe\.com)$/.test(refHost)) source = clean(refHost);
+    } catch { /* no referrer */ }
+  }
+  if (!source) return null;
+  return encodeURIComponent(JSON.stringify({ source, medium: clean(q.get("utm_medium")), campaign: clean(q.get("utm_campaign")) }));
+}
+
 export async function proxy(request: NextRequest) {
+  const res = await handle(request);
+  const src = sourceCookie(request);
+  if (src) res.cookies.set("orbit_src", src, { maxAge: 90 * 86_400, path: "/", sameSite: "lax", secure: true });
+  return res;
+}
+
+async function handle(request: NextRequest) {
   const { host, pathname, search } = request.nextUrl;
   if (host === OLD_HOST && !pathname.startsWith("/api") && !pathname.startsWith("/auth")) {
     return NextResponse.redirect(`https://${DOMAIN}${pathname}${search}`, 308);

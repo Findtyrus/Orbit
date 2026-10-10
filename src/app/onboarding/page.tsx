@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { PixelEvent } from "@/components/Pixels";
+import { isFreshSignup, trackVisit } from "@/lib/track";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/supabase/server";
 import { ProfileForm, type ProfileRow } from "@/components/ProfileForm";
@@ -21,8 +23,10 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
   ]);
   const p: Partial<ProfileRow> = profile ?? { name: (user.user_metadata?.name as string) ?? "" };
 
+  await trackVisit(user);
   return (
     <div className="space-y-6 pt-4">
+      {isFreshSignup(user.created_at) && <PixelEvent name="CompleteRegistration" />}
       <header>
         <div className="mb-6"><Logo size={22} /></div>
         <div className="flex gap-2">

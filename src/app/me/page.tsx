@@ -3,6 +3,7 @@ import { getUser } from "@/lib/supabase/server";
 import { BrainBuilder } from "@/components/client";
 import { ProfileForm, type ProfileRow } from "@/components/ProfileForm";
 import { getPlan, PLAN_LIMITS } from "@/lib/billing";
+import { PixelEvent } from "@/components/Pixels";
 import { aiAccess } from "@/lib/limits";
 import { openBillingPortal } from "../billing-actions";
 import { refreshFromStripe } from "@/lib/billing-sync";
@@ -37,6 +38,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
 
   return (
     <div className="space-y-6">
+      {sp.billing === "success" && <PixelEvent name="Subscribe" value={plan.interval === "year" ? 48 : 6} />}
       <h1 className="text-3xl font-semibold tracking-tight">Account</h1>
 
       {sp.billing === "success" && (

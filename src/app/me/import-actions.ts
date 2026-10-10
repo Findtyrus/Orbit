@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { buildBrainsFor } from "@/lib/jobs";
 import { getUser } from "@/lib/supabase/server";
+import { trackOnce } from "@/lib/track";
 import { readLinkedInFiles, type LinkedInMessage } from "@/lib/linkedin";
 
 export type ImportResult =
@@ -161,5 +162,6 @@ export async function importLinkedIn(_prev: ImportResult | null, form: FormData)
   if (prof?.onboarded_at) after(() => buildBrainsFor(user.id));
 
   revalidatePath("/", "layout");
+  if (connections.length) await trackOnce(user.id, "linkedin_import", { connections: connections.length });
   return { ok: true, connections: connections.length, newFromMessages, messages: rows.length, cadenceSet };
 }

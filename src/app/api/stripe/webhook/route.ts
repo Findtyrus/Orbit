@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { saveSubscription } from "@/lib/billing-sync";
+import { trackOnce } from "@/lib/track";
 
 /** Keeps public.subscriptions in sync with Stripe. Configure in Stripe → Developers → Webhooks. */
 export async function POST(request: NextRequest) {
@@ -29,6 +30,10 @@ export async function POST(request: NextRequest) {
   ) {
     sub = event.data.object;
   }
-  if (sub) await saveSubscription(sub);
+  if (sub) {
+    await saveSubscription(sub);
+    const uid = sub.metadata?.user_id;
+    if (uid && (sub.status === "active" || sub.status === "trialing")) await trackOnce(uid, "subscribed", { interval: sub.items.data[0]?.price.recurring?.interval ?? "" });
+  }
   return NextResponse.json({ received: true });
 }
