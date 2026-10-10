@@ -5,11 +5,11 @@ import { after } from "next/server";
 import { buildBrainsFor } from "@/lib/jobs";
 import { getUser } from "@/lib/supabase/server";
 import { trackOnce } from "@/lib/track";
-import { rewardInvite } from "@/lib/referrals";
+import { codeFor, rewardInvite } from "@/lib/referrals";
 import { readLinkedInFiles, type LinkedInMessage } from "@/lib/linkedin";
 
 export type ImportResult =
-  | { ok: true; connections: number; newFromMessages: number; messages: number; cadenceSet: number }
+  | { ok: true; connections: number; newFromMessages: number; messages: number; cadenceSet: number; inviteUrl?: string }
   | { ok: false; error: string };
 
 const DEFAULT_CADENCE_DAYS = 60;
@@ -164,5 +164,7 @@ export async function importLinkedIn(_prev: ImportResult | null, form: FormData)
 
   revalidatePath("/", "layout");
   if (connections.length && (await trackOnce(user.id, "linkedin_import", { connections: connections.length }))) await rewardInvite(user.id);
-  return { ok: true, connections: connections.length, newFromMessages, messages: rows.length, cadenceSet };
+  let inviteUrl: string | undefined;
+  try { inviteUrl = `https://buildyourorbit.com/?r=${await codeFor(user.id)}`; } catch { /* invite card is optional */ }
+  return { ok: true, connections: connections.length, newFromMessages, messages: rows.length, cadenceSet, inviteUrl };
 }

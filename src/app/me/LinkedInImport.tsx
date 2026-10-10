@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { importLinkedIn, type ImportResult } from "./import-actions";
+import { CopyLink } from "@/components/CopyLink";
 
 export function LinkedInImport() {
   const [result, action, pending] = useActionState<ImportResult | null, FormData>(importLinkedIn, null);
@@ -27,6 +28,13 @@ export function LinkedInImport() {
           <li>✓ {result.messages} LinkedIn messages added to timelines</li>
           <li>✓ {result.cadenceSet} people you&apos;ve talked with set to a 2-month check-in</li>
         </ul>
+      )}
+      {result?.ok && result.inviteUrl && (
+        <div className="mt-4 space-y-2 border-t border-line pt-4">
+          <p className="text-sm font-medium">Know a friend who is recruiting too?</p>
+          <p className="text-sm text-muted">They get 7 extra trial days. You get a free month once they import LinkedIn.</p>
+          <CopyLink url={result.inviteUrl} />
+        </div>
       )}
     </section>
   );

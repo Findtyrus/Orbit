@@ -11,6 +11,9 @@ import { fullName, isOlderThan, isoDate, relDays, shortDate, type Commitment, ty
 import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
 import { trackVisit } from "@/lib/track";
+import { InviteNudge } from "@/components/InviteNudge";
+import { codeFor, referralStats } from "@/lib/referrals";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { inZone, userTimeZone } from "@/lib/tz";
 import { OutreachQueue, type QueueItem } from "@/components/OutreachQueue";
 
@@ -144,6 +147,15 @@ export default async function TodayPage() {
   if (user) await trackVisit(user);
   if (!me.data?.onboarded_at) redirect("/onboarding");
   const plan = user ? await getPlan(supabase, user) : null;
+  let inviteUrl: string | null = null;
+  if (user && me.data?.tour_done_at && process.env.SUPABASE_SECRET_KEY) {
+    // Offer an invite to students who keep coming back and haven't invited anyone yet.
+    const [{ count: days }, stats] = await Promise.all([
+      createAdminClient().from("events").select("id", { count: "exact", head: true }).eq("user_id", user.id).like("name", "active:%"),
+      referralStats(user.id),
+    ]);
+    if ((days ?? 0) >= 3 && stats.invited === 0) inviteUrl = `https://buildyourorbit.com/?r=${await codeFor(user.id)}`;
+  }
   const list = (people.data ?? []) as ContactStatus[];
   const byId = new Map(list.map((c) => [c.id, c]));
   const synMap = new Map(((syn.data ?? []) as Synopsis[]).map((s) => [s.contact_id, s]));
@@ -170,6 +182,7 @@ export default async function TodayPage() {
   return (
     <div className="space-y-8">
       {!me.data?.tour_done_at && <Tour />}
+      {inviteUrl && <InviteNudge url={inviteUrl} />}
       <header>
         <p className="text-sm text-muted">{z.date(now, { weekday: "long", month: "long", day: "numeric" })}</p>
         <h1 className="text-3xl font-semibold tracking-tight">{greeting}{firstName ? `, ${firstName}` : ""}</h1>
