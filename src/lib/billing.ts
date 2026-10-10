@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "./supabase/admin";
+import { bonusDays } from "./referrals";
 
 export const TRIAL_DAYS = 14;
 export const PRICES = { month: 6, year: 48 } as const; // keep in sync with scripts/stripe-setup.mjs
@@ -45,8 +46,8 @@ const PAID = new Set(["active", "trialing", "past_due"]); // past_due keeps acce
 export function planFrom(createdAt: string, sub: {
   status: string | null; plan_interval: string | null; current_period_end: string | null;
   cancel_at_period_end: boolean; stripe_customer_id: string | null;
-} | null): Plan {
-  const trialEndsAt = new Date(Date.parse(createdAt) + TRIAL_DAYS * 86_400_000);
+} | null, bonusDays = 0): Plan {
+  const trialEndsAt = new Date(Date.parse(createdAt) + (TRIAL_DAYS + bonusDays) * 86_400_000);
   const trialDaysLeft = Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000));
   const subscribed = !!sub?.status && PAID.has(sub.status);
   return {
@@ -67,7 +68,7 @@ export async function getPlan(db: SupabaseClient, user: { id: string; created_at
   const { data } = await db.from("subscriptions")
     .select("status, plan_interval, current_period_end, cancel_at_period_end, stripe_customer_id")
     .eq("user_id", user.id).maybeSingle();
-  return planFrom(user.created_at, data);
+  return planFrom(user.created_at, data, await bonusDays(user.id));
 }
 
 /** Plan for any user id — used by background jobs and usage limits. */
@@ -79,5 +80,5 @@ export async function getPlanById(userId: string): Promise<Plan> {
       .select("status, plan_interval, current_period_end, cancel_at_period_end, stripe_customer_id")
       .eq("user_id", userId).maybeSingle(),
   ]);
-  return planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub);
+  return planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub, await bonusDays(userId));
 }

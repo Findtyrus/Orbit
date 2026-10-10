@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "./supabase/admin";
+import { bonusDays } from "./referrals";
 import { MONTHLY_AI_BUDGET, planFrom, PLAN_LIMITS, UNIT_COST, type UsageKind } from "./billing";
 
 export type { UsageKind };
@@ -25,7 +26,7 @@ export async function aiAccess(userId: string): Promise<AIAccess> {
   ]);
   if (prof && prof.ai_enabled === false) return { active: false, reason: "off" };
   if (allowlisted(u.user?.email)) return { active: true, tier: "pro" };
-  const plan = planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub);
+  const plan = planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub, await bonusDays(userId));
   if (plan.source === "subscription") return { active: true, tier: "pro" };
   // Trials get a limited taste of AI unless AI_IN_TRIAL=false.
   if (plan.source === "trial" && process.env.AI_IN_TRIAL !== "false") return { active: true, tier: "trial" };

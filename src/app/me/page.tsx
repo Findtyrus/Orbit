@@ -4,6 +4,8 @@ import { BrainBuilder } from "@/components/client";
 import { ProfileForm, type ProfileRow } from "@/components/ProfileForm";
 import { getPlan, PLAN_LIMITS } from "@/lib/billing";
 import { PixelEvent } from "@/components/Pixels";
+import { CopyLink } from "@/components/CopyLink";
+import { codeFor, referralStats } from "@/lib/referrals";
 import { aiAccess } from "@/lib/limits";
 import { openBillingPortal } from "../billing-actions";
 import { refreshFromStripe } from "@/lib/billing-sync";
@@ -31,6 +33,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
     try { await refreshFromStripe(user!.id); } catch (e) { console.error("stripe refresh failed", e); }
   }
   const plan = await getPlan(supabase, user!);
+  const [inviteCode, stats] = await Promise.all([codeFor(user!.id), referralStats(user!.id)]);
   const themePref = (await cookies()).get("theme")?.value;
   const access = await aiAccess(user!.id);
   const limits = PLAN_LIMITS[access.tier ?? "free"];
@@ -67,6 +70,18 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
             <Link href="/upgrade" className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-ink">Upgrade</Link>
           )}
         </div>
+      </section>
+
+      <section className="space-y-3 rounded-lg border border-line bg-card p-4">
+        <div>
+          <h2 className="font-semibold">Invite a friend</h2>
+          <p className="text-sm text-muted">
+            When a friend joins with your link and imports their LinkedIn, they get 7 extra trial days and you get a free month
+            {stats.rewarded ? ` (${stats.rewarded} earned so far)` : ""}.
+          </p>
+        </div>
+        <CopyLink url={`https://buildyourorbit.com/?r=${inviteCode}`} />
+        <p className="text-xs text-muted">{stats.invited} invited, up to 6 free months.</p>
       </section>
 
       <section className="rounded-lg border border-line bg-card p-4">

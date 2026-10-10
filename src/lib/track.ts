@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createAdminClient } from "./supabase/admin";
+import { claimInvite } from "./referrals";
 
 /** Where a visitor first came from, set by the proxy from UTM tags, click ids or the referrer. */
 export type Source = { source?: string; medium?: string; campaign?: string };
@@ -31,7 +32,7 @@ export async function trackOnce(userId: string, name: string, props: Record<stri
 
 /** Signup (with source) and one "active" mark per day, so week-two return can be counted. */
 export async function trackVisit(user: { id: string; created_at: string }) {
-  await trackOnce(user.id, "signup", await readSource(), user.created_at);
+  if (await trackOnce(user.id, "signup", await readSource(), user.created_at)) await claimInvite(user.id);
   await trackOnce(user.id, `active:${new Date().toISOString().slice(0, 10)}`);
 }
 

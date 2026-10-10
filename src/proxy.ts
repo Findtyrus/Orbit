@@ -32,6 +32,10 @@ function sourceCookie(request: NextRequest): string | null {
 
 export async function proxy(request: NextRequest) {
   const res = await handle(request);
+  const inviter = request.nextUrl.searchParams.get("r")?.toLowerCase() ?? "";
+  if (/^[a-z0-9]{6,12}$/.test(inviter) && !request.cookies.has("orbit_ref")) {
+    res.cookies.set("orbit_ref", inviter, { maxAge: 90 * 86_400, path: "/", sameSite: "lax", secure: true });
+  }
   const src = sourceCookie(request);
   if (src) res.cookies.set("orbit_src", src, { maxAge: 90 * 86_400, path: "/", sameSite: "lax", secure: true });
   return res;
