@@ -24,6 +24,8 @@ export const PLAN_LIMITS = {
 export const UNIT_COST: Record<keyof typeof PLAN_LIMITS.pro, number> = { memories: 0.0235, asks: 0.0168, preps: 0.03, drafts: 0.007 };
 /** Monthly AI budget per account in USD. Paying students stay well under the $6 price; trials get a smaller taste. */
 export const MONTHLY_AI_BUDGET = { pro: num(process.env.MONTHLY_AI_BUDGET, 3), trial: num(process.env.TRIAL_AI_BUDGET, 1.5) };
+/** Launch mode: everyone gets Pro features (with trial-sized AI limits) until FREE_LAUNCH=false is set. */
+export const FREE_LAUNCH = process.env.FREE_LAUNCH !== "false";
 export const FREE_FIRM_LIMIT = 3;
 /** Trial accounts get automatic memories for only their strongest relationships. */
 export const TRIAL_MEMORY_PEOPLE = 25;
@@ -31,7 +33,7 @@ export type UsageKind = keyof typeof PLAN_LIMITS.pro;
 
 export type Plan = {
   tier: "pro" | "free";
-  source: "subscription" | "trial" | "none";
+  source: "subscription" | "trial" | "launch" | "none";
   trialEndsAt: Date;
   trialDaysLeft: number;
   status: string | null;
@@ -51,8 +53,8 @@ export function planFrom(createdAt: string, sub: {
   const trialDaysLeft = Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000));
   const subscribed = !!sub?.status && PAID.has(sub.status);
   return {
-    tier: subscribed || trialDaysLeft > 0 ? "pro" : "free",
-    source: subscribed ? "subscription" : trialDaysLeft > 0 ? "trial" : "none",
+    tier: subscribed || trialDaysLeft > 0 || FREE_LAUNCH ? "pro" : "free",
+    source: subscribed ? "subscription" : trialDaysLeft > 0 ? "trial" : FREE_LAUNCH ? "launch" : "none",
     trialEndsAt,
     trialDaysLeft,
     status: sub?.status ?? null,

@@ -59,6 +59,8 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
                   : plan.status === "trialing"
                     ? `Trial, first charge ${plan.trialEndsAt.toLocaleDateString()}`
                     : `Renews ${plan.renewsAt?.toLocaleDateString() ?? ""}`
+                : plan.source === "launch"
+                  ? "Free while Orbit launches"
                 : plan.source === "trial"
                   ? `Free trial: ${plan.trialDaysLeft} day${plan.trialDaysLeft === 1 ? "" : "s"} left`
                   : "Upgrade for AI features and unlimited companies"}

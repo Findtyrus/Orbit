@@ -29,7 +29,7 @@ export async function aiAccess(userId: string): Promise<AIAccess> {
   const plan = planFrom(u.user?.created_at ?? new Date(0).toISOString(), sub, await bonusDays(userId));
   if (plan.source === "subscription") return { active: true, tier: "pro" };
   // Trials get a limited taste of AI unless AI_IN_TRIAL=false.
-  if (plan.source === "trial" && process.env.AI_IN_TRIAL !== "false") return { active: true, tier: "trial" };
+  if ((plan.source === "trial" || plan.source === "launch") && process.env.AI_IN_TRIAL !== "false") return { active: true, tier: "trial" };
   return { active: false, reason: "needs_pro" };
 }
 
