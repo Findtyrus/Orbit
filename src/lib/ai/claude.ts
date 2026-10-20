@@ -1,8 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import {
-  AskSchema, MeetingPrepSchema, MemorySchema, OutreachSchema, ResumeSchema,
-  type AIService, type AskAnswer, type AskInput, type MeetingPrep, type Memory, type MemoryInput,
+  AskSchema, CatchUpSchema, MeetingPrepSchema, MemorySchema, OutreachSchema, ResumeSchema,
+  type AIService, type AskAnswer, type CatchUp, type CatchUpInput, type AskInput, type MeetingPrep, type Memory, type MemoryInput,
   type OutreachDraft, type OutreachInput, type PrepInput, type Resume,
 } from "./service";
 
@@ -63,6 +63,14 @@ relationship strength and score, last contact, tags, and a memory summary when o
 Answer only from the roster. Recommend specific people by their ref, strongest relevant relationships
 first, and say when the network has no good match rather than stretching. Suggested actions should be
 concrete and respectful of the relationship's current strength.`;
+
+const CATCHUP_SYSTEM = `The owner of a networking app is catching their records up. They write what they have done since they last updated, in their own words.
+You get a list of candidate people (ref, name, role, company) and the owner's open loops (ref, person, what is open, who owes it).
+Turn the text into proposed changes:
+- close_loop when the text shows an open loop is finished (match by meaning, not exact words). Never close a loop the text does not clearly show finished.
+- log_note for something that happened with a specific person (a chat, a call, a message, news about them), written as a short first-person note.
+- new_loop for a new thing someone now owes.
+Only use refs from the lists. If a person or loop is unclear, put the item in unmatched instead of guessing. Make the fewest changes that capture what the text says.`;
 
 const PREP_SYSTEM = `You write a short pre-meeting brief the owner reads on their phone an hour before a meeting.
 Use only what's in the meeting details, the attendee memories and recent history. Keep it skimmable and
@@ -147,6 +155,23 @@ ${timeline}`,
     });
     if (response.stop_reason === "refusal") throw new Error("The model declined to answer that question.");
     if (!response.parsed_output) throw new Error(`No answer returned (stop reason: ${response.stop_reason}).`);
+    return undash(response.parsed_output);
+  }
+
+  async catchUp(input: CatchUpInput): Promise<CatchUp> {
+    const response = await this.client.beta.messages.parse({
+      model: MEMORY_MODEL,
+      max_tokens: 6000,
+      ...FALLBACK,
+      output_config: { effort: "low", format: betaZodOutputFormat(CatchUpSchema) },
+      system: [{ type: "text", text: `${CATCHUP_SYSTEM}\n\n${STYLE}`, cache_control: { type: "ephemeral" } }],
+      messages: [{
+        role: "user",
+        content: `Today is ${input.today}.\n\n${meBlock(input.me)}\n\nPeople:\n${input.people || "(none matched)"}\n\nOpen loops:\n${input.loops || "(none)"}\n\nWhat the owner says they have done:\n${input.text}`,
+      }],
+    });
+    if (response.stop_reason === "refusal") throw new Error("The model declined to process that update.");
+    if (!response.parsed_output) throw new Error(`No result returned (stop reason: ${response.stop_reason}).`);
     return undash(response.parsed_output);
   }
 

@@ -13,6 +13,8 @@ export interface AIService {
   prepMeeting(input: PrepInput): Promise<MeetingPrep>;
   /** One outreach draft (cold intro, follow-up, or check-in) for the daily queue. */
   draftOutreach(input: OutreachInput): Promise<OutreachDraft>;
+  /** Turn a free-text update ("I sent Sarah my resume, met Mike for coffee") into proposed memory changes. */
+  catchUp(input: CatchUpInput): Promise<CatchUp>;
   /** Pull structured background out of a resume PDF (base64). */
   parseResume(pdfBase64: string): Promise<Resume>;
 }
@@ -37,6 +39,29 @@ export const ResumeSchema = z.object({
   hometown: z.string().nullable().describe("Only if stated."),
 });
 export type Resume = z.infer<typeof ResumeSchema>;
+
+export type CatchUpInput = {
+  today: string;
+  me: { name: string; about: string; goals: string };
+  text: string;
+  people: string;  // one line per candidate person, keyed by a short ref like "P2"
+  loops: string;   // one line per open loop, keyed by a short ref like "L3"
+};
+
+export const CatchUpSchema = z.object({
+  updates: z.array(z.object({
+    action: z.enum(["close_loop", "log_note", "new_loop"]),
+    loop_ref: z.string().nullable().describe("For close_loop: the open loop's ref, e.g. 'L3'. Otherwise null."),
+    person_ref: z.string().nullable().describe("For log_note and new_loop: the person's ref, e.g. 'P2'. Otherwise null."),
+    text: z.string().describe("log_note: what happened, in first person past tense. new_loop: short imperative. close_loop: what was done, a few words."),
+    owner: z.enum(["me", "them"]).nullable().describe("new_loop only: who owes it."),
+    due_on: z.string().nullable().describe("new_loop only: YYYY-MM-DD if a time was stated, else null."),
+    occurred_on: z.string().nullable().describe("log_note only: YYYY-MM-DD when it happened if stated or clear, else null."),
+    summary: z.string().describe("One plain sentence the student reads to approve this change."),
+  })),
+  unmatched: z.array(z.string()).describe("Things mentioned that could not be tied to a known person or open loop."),
+});
+export type CatchUp = z.infer<typeof CatchUpSchema>;
 
 export type OutreachInput = {
   today: string;

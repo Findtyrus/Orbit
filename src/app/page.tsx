@@ -13,6 +13,7 @@ import { Tour } from "@/components/Tour";
 import { trackVisit } from "@/lib/track";
 import { InviteNudge } from "@/components/InviteNudge";
 import { InstallGuide } from "@/components/InstallGuide";
+import { CatchUp } from "@/components/CatchUp";
 import { codeFor, referralStats } from "@/lib/referrals";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inZone, userTimeZone } from "@/lib/tz";
@@ -201,6 +202,8 @@ export default async function TodayPage() {
           ))}
         </div>
       </header>
+
+      {(counts.count ?? 0) > 0 && <CatchUp />}
 
       {counts.count === 0 && (
         <section className="space-y-2 rounded-lg border border-line bg-card p-4">
