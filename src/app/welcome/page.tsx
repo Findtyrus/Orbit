@@ -59,12 +59,14 @@ const STEPS = [
 
 const FAQ: [string, string][] = [
   ["Will Orbit message people for me?", "Never. Orbit drafts messages; you read, edit and send every one yourself from LinkedIn or your own email."],
-  ["Is my data private?", "Yes. Your network is visible only to you. You can export or delete everything anytime, and the AI provider doesn't train on your data."],
+  ["Is my data private?", "Yes. Your network is visible only to you, and nobody else can see it. You can export or delete everything anytime, and the AI provider doesn't train on your data."],
+  ["What does the AI see?", "Only what a task needs. When Orbit writes a memory or a draft, it sends the notes and messages for that person to the AI provider, Anthropic, which returns the result and does not train on it. You can turn AI off in your account and the rest of Orbit keeps working."],
+  ["Do you sell my data or show ads?", "No. Orbit is free for students while we launch, and your data is never sold or used for advertising."],
   ["Do I need LinkedIn Premium?", "No. You import your free LinkedIn data export (Settings, Data privacy, Get a copy of your data)."],
   ["LinkedIn's export takes a day. Can I start now?", "Yes. Add the people you're already talking to by hand and set up your target companies while you wait."],
   ["Why not just use a spreadsheet?", "A spreadsheet doesn't remember what people told you, notice when someone hasn't replied, or draft the follow-up. Orbit does all three."],
   ["Is it only for finance and accounting?", "It's built for them first, with target companies, coffee chats and recruiting deadlines. Any student who networks can use it."],
-  ["What does it cost?", "Free for 14 days, no credit card. Then $6 a month or $48 a year, which works out to $4 a month."],
+  ["What does it cost?", "Free for students, no credit card. Paid plans (about $6 a month) may come later, and we will tell you well before anything changes."],
   ["Is there an iPhone app?", "Orbit works on your phone today. Open it in Safari, tap Share, then Add to Home Screen, and it opens like an app. Light and dark mode included."],
 ];
 
@@ -82,7 +84,7 @@ function Screen({ src, alt }: { src: string; alt: string }) {
   return <img src={`/landing/${src}`} alt={alt} loading="lazy" className="absolute inset-x-0 top-0 w-full" />;
 }
 
-function Cta({ className = "", children = "Start free for 14 days" }: { className?: string; children?: ReactNode }) {
+function Cta({ className = "", children = "Join free" }: { className?: string; children?: ReactNode }) {
   return (
     <Link href="/signup" className={`inline-flex items-center justify-center rounded-md bg-accent px-6 py-3.5 font-medium text-accent-ink transition-opacity hover:opacity-90 ${className}`}>
       {children}
@@ -90,7 +92,7 @@ function Cta({ className = "", children = "Start free for 14 days" }: { classNam
   );
 }
 
-const Fine = () => <p className="mt-3 text-xs text-faint">No credit card · Works on your phone · Cancel anytime</p>;
+const Fine = () => <p className="mt-3 text-xs text-faint">Free for students · No credit card · Works on your phone</p>;
 
 export default function WelcomePage() {
   return (
@@ -104,7 +106,7 @@ export default function WelcomePage() {
             <a href="#pricing" className="hidden text-muted hover:text-ink sm:inline">Pricing</a>
             <a href="#faq" className="hidden text-muted hover:text-ink sm:inline">FAQ</a>
             <Link href="/login" className="text-muted hover:text-ink">Sign in</Link>
-            <Link href="/signup" className="rounded-md bg-accent px-3 py-1.5 text-accent-ink">Try free</Link>
+            <Link href="/signup" className="rounded-md bg-accent px-3 py-1.5 text-accent-ink">Join free</Link>
           </nav>
         </header>
 
@@ -191,8 +193,8 @@ export default function WelcomePage() {
         <section className="grid gap-8 py-20 text-center md:grid-cols-3">
           {[
             ["You send every message", "Orbit drafts. You read, edit and hit send. Nothing goes out on its own."],
-            ["Private to you", "Your network is only visible to you. The AI provider doesn't train on your data."],
-            ["Yours to keep", "Export or delete everything, anytime, from your account."],
+            ["Private to you", "Your network is visible only to you. It is never sold, and the AI provider doesn't train on it."],
+            ["You control the AI", "Turn it off in your account and nothing is sent to the AI provider. Delete or export everything, anytime."],
           ].map(([t, b]) => (
             <div key={t}>
               <h3 className="font-semibold">{t}</h3>
@@ -206,19 +208,19 @@ export default function WelcomePage() {
           <h2 className="text-center text-[2rem] font-semibold tracking-[-0.035em]">Less than one coffee a month.</h2>
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 md:grid-cols-2">
             <div className="rounded-2xl border border-line bg-card p-7">
-              <h3 className="font-semibold">Free trial</h3>
+              <h3 className="font-semibold">Free for students</h3>
               <p className="mt-3 text-4xl font-semibold tracking-tight">$0</p>
-              <p className="mt-1 text-sm text-muted">for 14 days, no credit card</p>
+              <p className="mt-1 text-sm text-muted">while Orbit launches, no credit card</p>
               <ul className="mt-6 space-y-2 text-sm text-muted">
-                <li>Everything in Orbit</li><li>A taste of the AI: memories, drafts and prep</li><li>Keep your data if you don&apos;t upgrade</li>
+                <li>Everything in Orbit</li><li>The AI: memories, drafts and meeting prep</li><li>Export or delete your data anytime</li>
               </ul>
             </div>
             <div className="rounded-2xl border border-ink bg-card p-7">
-              <h3 className="font-semibold">Pro</h3>
+              <h3 className="font-semibold">Pro, later</h3>
               <p className="mt-3 text-4xl font-semibold tracking-tight">$6<span className="text-base font-normal text-muted"> /month</span></p>
-              <p className="mt-1 text-sm text-muted">or $48 a year, $4 a month</p>
+              <p className="mt-1 text-sm text-muted">for heavier use. We will tell you before it starts.</p>
               <ul className="mt-6 space-y-2 text-sm text-muted">
-                <li>Memories for up to 200 people</li><li>Daily drafted outreach and meeting prep</li><li>Ask your network anything</li>
+                <li>Higher daily AI limits</li><li>Memories for up to 200 people a day</li><li>Ask your network anything</li>
               </ul>
             </div>
           </div>
@@ -250,8 +252,8 @@ export default function WelcomePage() {
           <Mark size={56} className="mx-auto" />
           <h2 className="mt-8 text-[2.4rem] font-semibold leading-[1.05] tracking-[-0.04em] md:text-[3.2rem]">Keep the right people in orbit.</h2>
           <p className="mx-auto mt-4 max-w-md text-[#a3a3a3]">Built by an accounting student, for students recruiting in finance and accounting.</p>
-          <Link href="/signup" className="mt-9 inline-flex rounded-md bg-[#ededed] px-7 py-3.5 font-medium text-[#0a0a0a] hover:opacity-90">Start free for 14 days</Link>
-          <p className="mt-3 text-xs text-[#737373]">No credit card · Works on your phone · Cancel anytime</p>
+          <Link href="/signup" className="mt-9 inline-flex rounded-md bg-[#ededed] px-7 py-3.5 font-medium text-[#0a0a0a] hover:opacity-90">Join free</Link>
+          <p className="mt-3 text-xs text-[#737373]">Free for students · No credit card · Works on your phone</p>
         </div>
       </section>
 

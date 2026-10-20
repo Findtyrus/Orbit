@@ -11,6 +11,16 @@ export default function PrivacyPage() {
         we don&apos;t use it for advertising, and you can export or delete it at any time.
       </p>
 
+      <h2>In plain English</h2>
+      <ul>
+        <li>Your network is visible only to you. Each account is isolated at the database level.</li>
+        <li>We never sell your data or use it for advertising.</li>
+        <li>AI features send Anthropic, our AI provider, only what a task needs. It does not use that data to train its models.</li>
+        <li>You can turn AI off in Account, and nothing is then sent to the AI provider.</li>
+        <li>You can export or delete everything at any time.</li>
+        <li>Orbit never sends messages or emails for you.</li>
+      </ul>
+
       <h2>What we collect</h2>
       <ul>
         <li><b>Account information:</b> your name, email address and password (stored hashed by our authentication provider).</li>

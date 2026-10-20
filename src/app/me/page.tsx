@@ -14,6 +14,7 @@ import { signOut } from "../login/actions";
 import { LinkedInImport } from "./LinkedInImport";
 import { GoogleSync } from "./GoogleSync";
 import { DeleteAccount } from "./DeleteAccount";
+import { PrivacyAI } from "./PrivacyAI";
 import { ResumeUpload } from "./ResumeUpload";
 import { ThemePicker } from "@/components/ThemePicker";
 import { replayTour } from "../profile-actions";
@@ -117,6 +118,8 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
           <button className="text-sm font-medium text-ink underline decoration-line-strong underline-offset-2">Replay the walkthrough</button>
         </form>
       </section>
+
+      <PrivacyAI enabled={(profile as { ai_enabled?: boolean } | null)?.ai_enabled !== false} />
 
       <section className="space-y-3 rounded-lg border border-line bg-card p-4 text-sm">
         <h2 className="font-semibold">Account</h2>
