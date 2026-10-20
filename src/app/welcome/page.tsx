@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo, Mark } from "@/components/Logo";
+import { InAppBrowserNotice } from "@/components/InstallGuide";
 
 export const metadata = {
   title: "Orbit | Your career has gravity",
@@ -109,6 +110,8 @@ export default function WelcomePage() {
             <Link href="/signup" className="rounded-md bg-accent px-3 py-1.5 text-accent-ink">Join free</Link>
           </nav>
         </header>
+
+        <div className="pt-6"><InAppBrowserNotice /></div>
 
         {/* Hero */}
         <section className="grid items-center gap-12 pt-12 pb-20 md:grid-cols-[1.15fr_1fr] md:pt-20">

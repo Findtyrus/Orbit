@@ -48,11 +48,15 @@ export default async function OnboardingPage({ searchParams }: PageProps<"/onboa
       {step === 2 && (
         <section className="space-y-4">
           <h1 className="text-2xl font-semibold tracking-tight">Bring in your LinkedIn network</h1>
+          <p className="text-sm text-muted">It takes one minute to ask LinkedIn for your data. They do the rest and email you a file.</p>
+          <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener noreferrer"
+            className="block rounded-md border border-line bg-card py-3 text-center font-medium">
+            1. Open LinkedIn&apos;s data page
+          </a>
           <ol className="list-decimal space-y-1 rounded-lg border border-line bg-card p-4 pl-8 text-sm">
-            <li>On LinkedIn, open <b>Settings &amp; Privacy → Data privacy → Get a copy of your data</b>.</li>
-            <li>Choose <b>“Download larger data archive”</b> (includes your messages) and request it.</li>
+            <li>Choose <b>“Download larger data archive”</b> (includes your messages) and tap <b>Request archive</b>.</li>
             <li>LinkedIn emails you a link, usually within 10 minutes and sometimes up to a day.</li>
-            <li>Download the .zip and upload it below. Nothing is posted to LinkedIn.</li>
+            <li>Download the .zip and upload it below. You can do it from your phone. Nothing is posted to LinkedIn.</li>
           </ol>
           <LinkedInImport />
           <div className="flex gap-2">

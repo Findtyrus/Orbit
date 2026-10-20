@@ -12,6 +12,7 @@ import { snooze } from "./contacts/actions";
 import { Tour } from "@/components/Tour";
 import { trackVisit } from "@/lib/track";
 import { InviteNudge } from "@/components/InviteNudge";
+import { InstallGuide } from "@/components/InstallGuide";
 import { codeFor, referralStats } from "@/lib/referrals";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inZone, userTimeZone } from "@/lib/tz";
@@ -182,6 +183,7 @@ export default async function TodayPage() {
   return (
     <div className="space-y-8">
       {!me.data?.tour_done_at && <Tour />}
+      <InstallGuide />
       {inviteUrl && <InviteNudge url={inviteUrl} />}
       <header>
         <p className="text-sm text-muted">{z.date(now, { weekday: "long", month: "long", day: "numeric" })}</p>
